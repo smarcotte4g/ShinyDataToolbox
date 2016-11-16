@@ -8,7 +8,7 @@ function(input, output) {
       return(NULL)
     
     mydf<- read.csv(inFile$datapath, header=T, sep=',', quote='"')
-    mydf[!sapply(mydf, function(x) all(is.na(x)))]
+    mydf[!sapply(mydf, function(x) all(is.na(x)))] #remove blank columns
   })
   #output$contents <- renderTable({
     #datasetInput()
