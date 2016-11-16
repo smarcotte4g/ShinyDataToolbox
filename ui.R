@@ -9,7 +9,8 @@ fluidPage(
                 accept=c('text/csv', 
                          'text/comma-separated-values,text/plain', 
                          '.csv')),
-      tags$hr()
+      tags$hr(),
+      downloadButton('downloadData', 'Download')
       # Test
       
     ),

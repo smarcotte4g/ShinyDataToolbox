@@ -1,14 +1,7 @@
 library(shiny)
 
 function(input, output) {
-  output$contents <- renderTable({
-    
-    # input$file1 will be NULL initially. After the user selects
-    # and uploads a file, it will be a data frame with 'name',
-    # 'size', 'type', and 'datapath' columns. The 'datapath'
-    # column will contain the local filenames where the data can
-    # be found.
-    
+  datasetInput <- reactive({
     inFile <- input$file1
     
     if (is.null(inFile))
@@ -16,5 +9,16 @@ function(input, output) {
     
     read.csv(inFile$datapath, header=T, sep=',', 
              quote='"')
+    
   })
+  output$contents <- renderTable({
+    datasetInput()
+  })
+  
+  output$downloadData <- downloadHandler(
+    filename = function() { as.character(input$file1) },
+    content = function(file) {
+      write.csv(datasetInput(), file)
+    }
+  ) 
 }
