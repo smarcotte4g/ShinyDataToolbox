@@ -1,21 +1,35 @@
 
 library(shiny)
 
-fluidPage(
-  titlePanel("Uploading Files"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput('file1', 'Choose CSV File',
-                accept=c('text/csv', 
-                         'text/comma-separated-values,text/plain', 
-                         '.csv')),
-      tags$hr(),
-      downloadButton('downloadData', 'Download')
-      # Test
-      
-    ),
-    mainPanel(
-      tableOutput('contents')
-    )
-  )
+navbarPage("Uploading Files",
+           tabPanel("Remove Blank Columns",
+                    sidebarLayout(
+                       sidebarPanel(
+                          fileInput('file1', 'Choose CSV File (Remove)',
+                                    accept=c('text/csv', 
+                                             'text/comma-separated-values,text/plain', 
+                                             '.csv')),
+                          tags$hr(),
+                          downloadButton('downloadData1', 'Download')
+                       ),
+                       mainPanel(
+                          tableOutput('contents1')
+                       ))
+           ),
+           navbarMenu("More...",
+                      tabPanel("Salesforce Cleanup",
+                               sidebarLayout(
+                                  sidebarPanel(
+                                     fileInput('file2', 'Choose CSV File (Salesforce)',
+                                               accept=c('text/csv', 
+                                                        'text/comma-separated-values,text/plain', 
+                                                        '.csv')),
+                                     tags$hr(),
+                                     downloadButton('downloadData2', 'Download')
+                                  ),
+                                  mainPanel(
+                                     tableOutput('contents2')
+                                  ))
+                      )
+           )
 )
