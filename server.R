@@ -1,3 +1,4 @@
+
 library(shiny)
 options(shiny.maxRequestSize=30*1024^2)
 function(input, output) {
@@ -8,9 +9,12 @@ function(input, output) {
 
       if (is.null(inFile))
          return(NULL)
-      
-      mydf<- read.csv(inFile$datapath, header=T, sep=',', quote='"')
-      mydf[!sapply(mydf, function(x) all(is.na(x)|x==""))] #remove all blank columns
+      #oneFile <- input$blankColumnsFile[[1,'datapath']]
+      #twoFile <- input$blankColumnsFile[[2,'datapath']]
+      fileList<- lapply(inFile$datapath, read.csv, header=T)
+      lapply(fileList, function(mydf) {mydf[!sapply(mydf, function(x) {all(is.na(x)|x=="")})]})
+      #mydf<- read.csv(inFile$datapath, header=T, sep=',', quote='"')
+      #mydf[!sapply(mydf, function(x) all(is.na(x)|x==""))] #remove all blank columns
    })
    
    output$blankColumnsContent <- renderTable({
@@ -18,10 +22,22 @@ function(input, output) {
    })
    
    output$blankColumnsDownload <- downloadHandler(
-      filename = function() { as.character(input$blankColumnsFile) },
-      content = function(file) {
-         write.csv(blankColumnsInput(), file, row.names = F)
-      }
+      filename = function() { paste("output", "zip", sep=".") },
+      content = function(fname) {
+        fs <- c()
+        tmpdir <- tempdir()
+        setwd(tempdir())
+        inFile <- input$blankColumnsFile
+        results <- blankColumnsInput()
+        for (i in 1:nrow(inFile)) {
+          path <- inFile[i,]$name
+          fs <- c(fs, path)
+          write.csv(results[[i]], path, row.names = F)
+        }
+        zip(zipfile=fname, files=fs)
+        if(file.exists(paste0(fname, ".zip"))) {file.rename(paste0(fname, ".zip"), fname)}
+      },
+      contentType = "application/zip"
    )
    
    ### CSV Splitter (slow)
