@@ -4,15 +4,15 @@ navbarPage("Uploading Files",
            tabPanel("Remove Blank Columns",
                     sidebarLayout(
                        sidebarPanel(
-                         p("This function will remove all blank columns contained in a CSV file.")
+                          fileInput('blankColumnsFile', 'Choose CSV File (Remove)',
+                                    accept=c('text/csv', 
+                                             'text/comma-separated-values,text/plain', 
+                                             '.csv')),
+                          tags$hr(),
+                          downloadButton('blankColumnsDownload', 'Download')
                        ),
                        mainPanel(
-                         fileInput('blankColumnsFile', 'Choose CSV File (Remove)',
-                                   accept=c('text/csv', 
-                                            'text/comma-separated-values,text/plain', 
-                                            '.csv')),
-                         tags$hr(),
-                         downloadButton('blankColumnsDownload', 'Download'),
+                          p("This function will remove all blank columns contained in a CSV file."),
                           tableOutput('blankColumnsContent')
                        ))
            ),
@@ -20,92 +20,86 @@ navbarPage("Uploading Files",
                       tabPanel("Contains New Lines",
                                sidebarLayout(
                                   sidebarPanel(
-                                     p("Change this text to be directions for the function.")
+                                     fileInput('slowSplitFile', 'Choose CSV File (Salesforce)',
+                                               accept=c('text/csv', 
+                                                        'text/comma-separated-values,text/plain', 
+                                                        '.csv')),
+                                     tags$hr(),
+                                     downloadButton('slowSplitDownload', 'Download')
                                   ),
                                   mainPanel(
-                                    fileInput('file2', 'Choose CSV File (Salesforce)',
-                                              accept=c('text/csv', 
-                                                       'text/comma-separated-values,text/plain', 
-                                                       '.csv')),
-                                    tags$hr(),
-                                    downloadButton('downloadData2', 'Download'),
-                                     tableOutput('contents2')
+                                     tableOutput('slowSplitContent')
                                   ))
                       ),
                       tabPanel("Doesn't Contain New Lines",
                                sidebarLayout(
                                   sidebarPanel(
-                                    p("Change this text to be directions for the function.")
+                                     fileInput('fastSplitFile', 'Choose CSV File (Salesforce)',
+                                               accept=c('text/csv', 
+                                                        'text/comma-separated-values,text/plain', 
+                                                        '.csv')),
+                                     tags$hr(),
+                                     downloadButton('fastSplitDownload', 'Download')
                                   ),
                                   mainPanel(
-                                    fileInput('file3', 'Choose CSV File (Salesforce)',
-                                              accept=c('text/csv', 
-                                                       'text/comma-separated-values,text/plain', 
-                                                       '.csv')),
-                                    tags$hr(),
-                                    downloadButton('downloadData3', 'Download'),
-                                     tableOutput('contents3')
+                                     tableOutput('fastSplitContent')
                                   ))
                       )
            ),
            tabPanel("Salesforce Cleaner",
                     sidebarLayout(
                        sidebarPanel(
-                         p("Change this text to be directions for the function.")
+                          fileInput('salesforceFile', 'Choose CSV File (Remove)',
+                                    accept=c('text/csv', 
+                                             'text/comma-separated-values,text/plain', 
+                                             '.csv')),
+                          tags$hr(),
+                          downloadButton('salesforceDownload', 'Download')
                        ),
                        mainPanel(
-                         fileInput('file4', 'Choose CSV File (Remove)',
-                                   accept=c('text/csv', 
-                                            'text/comma-separated-values,text/plain', 
-                                            '.csv')),
-                         tags$hr(),
-                         downloadButton('downloadData4', 'Download'),
-                          tableOutput('contents4')
+                          tableOutput('salesforceContent')
                        ))
            ),
            tabPanel("Filesmasher",
                     sidebarLayout(
                        sidebarPanel(
-                         p("Change this text to be directions for the function.")
+                          fileInput('filesmasherFile', 'Choose CSV File (Remove)',
+                                    accept=c('text/csv', 
+                                             'text/comma-separated-values,text/plain', 
+                                             '.csv')),
+                          tags$hr(),
+                          downloadButton('filesmasherDownload', 'Download')
                        ),
                        mainPanel(
-                         fileInput('file5', 'Choose CSV File (Remove)',
-                                   accept=c('text/csv', 
-                                            'text/comma-separated-values,text/plain', 
-                                            '.csv')),
-                         tags$hr(),
-                         downloadButton('downloadData5', 'Download'),
-                          tableOutput('contents5')
+                          tableOutput('filesmasherContent')
                        ))
            ),
            tabPanel("CSV Merge",
                     sidebarLayout(
                        sidebarPanel(
-                         p("Change this text to be directions for the function.")
+                          fileInput('csvMergeFile', 'Choose CSV File (Remove)',
+                                    accept=c('text/csv', 
+                                             'text/comma-separated-values,text/plain', 
+                                             '.csv')),
+                          tags$hr(),
+                          downloadButton('csvMergeDownload', 'Download')
                        ),
                        mainPanel(
-                         fileInput('file6', 'Choose CSV File (Remove)',
-                                   accept=c('text/csv', 
-                                            'text/comma-separated-values,text/plain', 
-                                            '.csv')),
-                         tags$hr(),
-                         downloadButton('downloadData6', 'Download'),
-                          tableOutput('contents6')
+                          tableOutput('csvMergeContent')
                        ))
            ),
            tabPanel("CSV Converter",
                     sidebarLayout(
                        sidebarPanel(
-                         p("Change this text to be directions for the function.")
+                          fileInput('csvConverterFile', 'Choose CSV File (Remove)',
+                                    accept=c('text/csv', 
+                                             'text/comma-separated-values,text/plain', 
+                                             '.csv')),
+                          tags$hr(),
+                          downloadButton('csvConverterDownload', 'Download')
                        ),
                        mainPanel(
-                         fileInput('file7', 'Choose CSV File (Remove)',
-                                   accept=c('text/csv', 
-                                            'text/comma-separated-values,text/plain', 
-                                            '.csv')),
-                         tags$hr(),
-                         downloadButton('downloadData7', 'Download'),
-                          tableOutput('contents7')
+                          tableOutput('csvConverterContent')
                        ))
            )
 )
