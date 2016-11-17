@@ -1,8 +1,8 @@
 library(shiny)
 options(shiny.maxRequestSize=30*1024^2)
 function(input, output) {
-   datasetInput <- reactive({
-      inFile <- input$file1
+   blankColumnsInput <- reactive({
+      inFile <- input$blankColumnsFile
       print(inFile)
       if (is.null(inFile))
          return(NULL)
@@ -11,14 +11,14 @@ function(input, output) {
       mydf[!sapply(mydf, function(x) all(is.na(x)|x==""))] #remove all blank columns
    })
    
-   output$contents1 <- renderTable({
-      datasetInput()
+   output$blankColumnsContent <- renderTable({
+      blankColumnsInput()
    })
    
-   output$downloadData1 <- downloadHandler(
-      filename = function() { as.character(input$file1) },
+   output$blankColumnsDownload <- downloadHandler(
+      filename = function() { as.character(input$blankColumnsFile) },
       content = function(file) {
-         write.csv(datasetInput(), file)
+         write.csv(blankColumnsInput(), file)
       }
    ) 
 }
