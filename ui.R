@@ -10,7 +10,7 @@ navbarPage("Uploading Files",
                           fileInput('blankColumnsFile', 'Choose CSV File (Remove)',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
-                                             '.csv')),
+                                             '.csv'), multiple = T),
                           tags$hr(),
                           downloadButton('blankColumnsDownload', 'Download'),
                           tableOutput('blankColumnsContent')
