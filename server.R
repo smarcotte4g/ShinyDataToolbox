@@ -1,9 +1,11 @@
 library(shiny)
 options(shiny.maxRequestSize=30*1024^2)
 function(input, output) {
+   
+   ### Remove Blank Columns
    blankColumnsInput <- reactive({
       inFile <- input$blankColumnsFile
-      print(inFile)
+
       if (is.null(inFile))
          return(NULL)
       
@@ -20,5 +22,17 @@ function(input, output) {
       content = function(file) {
          write.csv(blankColumnsInput(), file)
       }
-   ) 
+   )
+   
+   ### CSV Splitter (fast)
+   
+   ### CSV Splitter (slow)
+   
+   ### Salesforce Cleaner
+   
+   ### Filesmasher
+   
+   ### CSV Merge
+   
+   ### CSV Converter
 }

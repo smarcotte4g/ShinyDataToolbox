@@ -21,86 +21,86 @@ navbarPage("Uploading Files",
                       tabPanel("Contains New Lines",
                                sidebarLayout(
                                   sidebarPanel(
-                                     fileInput('file2', 'Choose CSV File (Salesforce)',
+                                     fileInput('slowSplitFile', 'Choose CSV File (Salesforce)',
                                                accept=c('text/csv', 
                                                         'text/comma-separated-values,text/plain', 
                                                         '.csv')),
                                      tags$hr(),
-                                     downloadButton('downloadData2', 'Download')
+                                     downloadButton('slowSplitDownload', 'Download')
                                   ),
                                   mainPanel(
-                                     tableOutput('contents2')
+                                     tableOutput('slowSplitContent')
                                   ))
                       ),
                       tabPanel("Doesn't Contain New Lines",
                                sidebarLayout(
                                   sidebarPanel(
-                                     fileInput('file3', 'Choose CSV File (Salesforce)',
+                                     fileInput('fastSplitFile', 'Choose CSV File (Salesforce)',
                                                accept=c('text/csv', 
                                                         'text/comma-separated-values,text/plain', 
                                                         '.csv')),
                                      tags$hr(),
-                                     downloadButton('downloadData3', 'Download')
+                                     downloadButton('fastSplitDownload', 'Download')
                                   ),
                                   mainPanel(
-                                     tableOutput('contents3')
+                                     tableOutput('fastSplitContent')
                                   ))
                       )
            ),
            tabPanel("Salesforce Cleaner",
                     sidebarLayout(
                        sidebarPanel(
-                          fileInput('file4', 'Choose CSV File (Remove)',
+                          fileInput('salesforceFile', 'Choose CSV File (Remove)',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv')),
                           tags$hr(),
-                          downloadButton('downloadData4', 'Download')
+                          downloadButton('salesforceDownload', 'Download')
                        ),
                        mainPanel(
-                          tableOutput('contents4')
+                          tableOutput('salesforceContent')
                        ))
            ),
            tabPanel("Filesmasher",
                     sidebarLayout(
                        sidebarPanel(
-                          fileInput('file5', 'Choose CSV File (Remove)',
+                          fileInput('filesmasherFile', 'Choose CSV File (Remove)',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv')),
                           tags$hr(),
-                          downloadButton('downloadData5', 'Download')
+                          downloadButton('filesmasherDownload', 'Download')
                        ),
                        mainPanel(
-                          tableOutput('contents5')
+                          tableOutput('filesmasherContent')
                        ))
            ),
            tabPanel("CSV Merge",
                     sidebarLayout(
                        sidebarPanel(
-                          fileInput('file6', 'Choose CSV File (Remove)',
+                          fileInput('csvMergeFile', 'Choose CSV File (Remove)',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv')),
                           tags$hr(),
-                          downloadButton('downloadData6', 'Download')
+                          downloadButton('csvMergeDownload', 'Download')
                        ),
                        mainPanel(
-                          tableOutput('contents6')
+                          tableOutput('csvMergeContent')
                        ))
            ),
            tabPanel("CSV Converter",
                     sidebarLayout(
                        sidebarPanel(
-                          fileInput('file7', 'Choose CSV File (Remove)',
+                          fileInput('csvConverterFile', 'Choose CSV File (Remove)',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv')),
                           tags$hr(),
-                          downloadButton('downloadData7', 'Download')
+                          downloadButton('csvConverterDownload', 'Download')
                        ),
                        mainPanel(
-                          tableOutput('contents7')
+                          tableOutput('csvConverterContent')
                        ))
            )
 )
