@@ -20,7 +20,7 @@ function(input, output) {
    output$blankColumnsDownload <- downloadHandler(
       filename = function() { as.character(input$blankColumnsFile) },
       content = function(file) {
-         write.csv(blankColumnsInput(), file)
+         write.csv(blankColumnsInput(), file, row.names = F)
       }
    )
    
@@ -43,7 +43,7 @@ function(input, output) {
    output$slowSplitDownload <- downloadHandler(
       filename = function() { as.character(input$slowSplitFile) },
       content = function(file) {
-         write.csv(slowSplitInput(), file)
+         write.csv(slowSplitInput(), file, row.names = F)
       }
    )
    
@@ -66,7 +66,7 @@ function(input, output) {
    output$fastSplitDownload <- downloadHandler(
       filename = function() { as.character(input$fastSplitFile) },
       content = function(file) {
-         write.csv(fastSplitInput(), file)
+         write.csv(fastSplitInput(), file, row.names = F)
       }
    )
    
@@ -89,7 +89,7 @@ function(input, output) {
    output$salesforceDownload <- downloadHandler(
       filename = function() { as.character(input$salesforceFile) },
       content = function(file) {
-         write.csv(salesforceInput(), file)
+         write.csv(salesforceInput(), file, row.names = F)
       }
    )
    
@@ -112,7 +112,7 @@ function(input, output) {
    output$filesmasherDownload <- downloadHandler(
       filename = function() { as.character(input$filesmasherFile) },
       content = function(file) {
-         write.csv(filesmasherInput(), file)
+         write.csv(filesmasherInput(), file, row.names = F)
       }
    )
    
@@ -135,7 +135,7 @@ function(input, output) {
    output$csvMergeDownload <- downloadHandler(
       filename = function() { as.character(input$csvMergeFile) },
       content = function(file) {
-         write.csv(csvMergeInput(), file)
+         write.csv(csvMergeInput(), file, row.names = F)
       }
    )
    
@@ -158,7 +158,7 @@ function(input, output) {
    output$csvConverterDownload <- downloadHandler(
       filename = function() { as.character(input$csvConverterFile) },
       content = function(file) {
-         write.csv(csvConverterInput(), file)
+         write.csv(csvConverterInput(), file, row.names = F)
       }
    )
 }
