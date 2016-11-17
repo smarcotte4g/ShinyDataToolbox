@@ -1,4 +1,3 @@
-
 library(shiny)
 
 navbarPage("Uploading Files",
