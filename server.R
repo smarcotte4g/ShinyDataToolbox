@@ -9,6 +9,7 @@ function(input, output) {
 
       if (is.null(inFile))
          return(NULL)
+
       #oneFile <- input$blankColumnsFile[[1,'datapath']]
       #twoFile <- input$blankColumnsFile[[2,'datapath']]
       fileList<- lapply(inFile$datapath, read.csv, header=T)
