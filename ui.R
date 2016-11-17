@@ -96,13 +96,14 @@ navbarPage("Uploading Files",
            tabPanel("CSV Converter",
                     sidebarLayout(
                        sidebarPanel(
-                          p("This function will remove all blank columns contained in a CSV file.")
+                          p("This function will convert an XML, JSON, or YAML file to CSV for importing.")
                        ),
                        mainPanel(
-                          fileInput('csvConverterFile', 'Choose CSV File (Remove)',
-                                    accept=c('text/csv', 
-                                             'text/comma-separated-values,text/plain', 
-                                             '.csv')),
+                          fileInput('csvConverterFile', 'Choose XML, JSON, or YAML File (Remove)',
+                                    accept=c('.xml',
+                                             '.json',
+                                             '.yaml',
+                                             '.yml')),
                           tags$hr(),
                           downloadButton('csvConverterDownload', 'Download'),
                           tableOutput('csvConverterContent')

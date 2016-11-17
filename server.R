@@ -10,7 +10,7 @@ function(input, output) {
          return(NULL)
       
       mydf<- read.csv(inFile$datapath, header=T, sep=',', quote='"')
-      mydf[!sapply(mydf, function(x) all(is.na(x)|x==""))] #remove all blank columns
+      mydf[!sapply(mydf, function(x) all(is.na(x)|x==""))]
    })
    
    output$blankColumnsContent <- renderTable({
