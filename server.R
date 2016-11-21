@@ -24,18 +24,18 @@ function(input, output) {
    
    output$blankColumnsDownload <- downloadHandler(
       filename = "output.zip",
-      content = function(fname) {
-        fs <- c()
-        tmpdir <- tempdir()
+      content = function(filename) {
+        files <- c()
+        tempdir <- tempdir()
         setwd(tempdir())
         inFile <- input$blankColumnsFile
         results <- blankColumnsInput()
         for (i in 1:nrow(inFile)) {
           path <- inFile[i,]$name
-          fs <- c(fs, path)
+          files <- c(files, path)
           write.csv(results[[i]], path, row.names = F)
         }
-        zip(zipfile=fname, files=fs)
+        zip(zipfile=filename, files=files)
       },
       contentType = "application/zip"
    )
