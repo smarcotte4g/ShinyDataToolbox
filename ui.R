@@ -20,7 +20,9 @@ navbarPage("Uploading Files",
                       tabPanel("Contains New Lines",
                                sidebarLayout(
                                   sidebarPanel(
-                                     p("This function will remove all blank columns contained in a CSV file.")
+                                     p("This function will split a single CSV file into multiple smaller CSVs under 10 MBs each."),
+                                     br(),
+                                     p("WARNING: This is slow. Only use this if cells contain new lines.")
                                   ),
                                   mainPanel(
                                      fileInput('slowSplitFile', 'Choose CSV File (Salesforce)',
@@ -35,7 +37,7 @@ navbarPage("Uploading Files",
                       tabPanel("Doesn't Contain New Lines",
                                sidebarLayout(
                                   sidebarPanel(
-                                     p("This function will remove all blank columns contained in a CSV file.")
+                                     p("This function will split a single CSV file into multiple smaller CSVs under 10 MBs each.")
                                   ),
                                   mainPanel(
                                      fileInput('fastSplitFile', 'Choose CSV File (Salesforce)',

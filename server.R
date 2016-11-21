@@ -1,5 +1,6 @@
 
 library(shiny)
+library(tools)
 options(shiny.maxRequestSize=30*1024^2)
 function(input, output) {
    
@@ -50,6 +51,8 @@ function(input, output) {
       
       # <CODE FOR SPLITTING CSVS, HANDLING NEW LINES>
       # <RETURN LIST OF DATA FRAMES>
+      
+      read.csv(inFile$datapath,header=T)
    })
    
    output$slowSplitContent <- renderTable({
@@ -57,10 +60,33 @@ function(input, output) {
    })
    
    output$slowSplitDownload <- downloadHandler(
-      filename = function() { as.character(input$slowSplitFile) },
-      content = function(file) {
-         write.csv(slowSplitInput(), file, row.names = F)
-      }
+      filename = function() { paste(as.character(input$slowSplitFile$name),"zip",sep=".") },
+      content = function(filename) {
+         files <- c()
+         tempdir <- tempdir()
+         setwd(tempdir())
+         inFile <- input$slowSplitFile
+         results <- slowSplitInput()
+         
+         fname <- file_path_sans_ext(inFile$name)
+         maxfilesize <- 9 * 1024 * 1024
+         filenum <- 1
+         files <- c(files,paste(fname,filenum,".csv",sep=""))
+         
+         write.csv(results[0,],paste(fname,filenum,".csv",sep=""),na='',row.names=F)
+         for (row in 1:nrow(results)) {
+            
+            if(file.info(paste(fname,filenum,".csv",sep=""))$size >= maxfilesize) {
+               filenum <- filenum + 1
+               files <- c(files,paste(fname,filenum,".csv",sep=""))
+               write.csv(results[0,],paste(fname,filenum,".csv",sep=""),na='',row.names=F)
+            }
+            
+            write.table(results[row,],paste(fname,filenum,".csv",sep=""),na='',sep=',',row.names=F,col.names=F,append=T)
+         }
+         zip(zipfile=filename, files=files)
+      },
+      contentType = "application/zip"
    )
    
    ### CSV Splitter (fast)
