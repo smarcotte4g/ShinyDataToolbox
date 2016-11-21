@@ -1,22 +1,20 @@
 
 library(shiny)
 library(tools)
-options(shiny.maxRequestSize=30*1024^2)
+
+options(shiny.maxRequestSize=200*1024^2)
 function(input, output) {
    
-   ### Remove Blank Columns
+   ### Remove Blank Columns --- DONE
+   
    blankColumnsInput <- reactive({
       inFile <- input$blankColumnsFile
 
       if (is.null(inFile))
          return(NULL)
 
-      #oneFile <- input$blankColumnsFile[[1,'datapath']]
-      #twoFile <- input$blankColumnsFile[[2,'datapath']]
       fileList<- lapply(inFile$datapath, read.csv, header=T)
       lapply(fileList, function(mydf) {mydf[!sapply(mydf, function(x) {all(is.na(x)|x=="")})]})
-      #mydf<- read.csv(inFile$datapath, header=T, sep=',', quote='"')
-      #mydf[!sapply(mydf, function(x) all(is.na(x)|x==""))] #remove all blank columns
    })
    
    output$blankColumnsContent <- renderTable({
@@ -41,16 +39,13 @@ function(input, output) {
       contentType = "application/zip"
    )
    
-   ### CSV Splitter (slow)
+   ### CSV Splitter (slow) --- DONE
    
    slowSplitInput <- reactive({
       inFile <- input$slowSplitFile
 
       if (is.null(inFile))
          return(NULL)
-      
-      # <CODE FOR SPLITTING CSVS, HANDLING NEW LINES>
-      # <RETURN LIST OF DATA FRAMES>
       
       read.csv(inFile$datapath,header=T)
    })
@@ -97,8 +92,7 @@ function(input, output) {
       if (is.null(inFile))
          return(NULL)
       
-      # <CODE FOR SPLITTING CSVS, NOT HANDLING NEW LINES>
-      # <RETURN LIST OF DATA FRAMES>
+      "hello"
    })
    
    output$fastSplitContent <- renderTable({
@@ -106,10 +100,48 @@ function(input, output) {
    })
    
    output$fastSplitDownload <- downloadHandler(
-      filename = function() { as.character(input$fastSplitFile) },
-      content = function(file) {
-         write.csv(fastSplitInput(), file, row.names = F)
-      }
+      filename = function() { paste(as.character(input$fastSplitFile$name),"zip",sep=".") },
+      content = function(filename) {
+         files <- c()
+         tempdir <- tempdir()
+         setwd(tempdir())
+         inFile <- input$fastSplitFile
+         
+         fname <- file_path_sans_ext(inFile$name)
+         total <- 0
+         filenum <- 1
+         firstLine <- NA
+         maxfilesize <- 9.5 * 1024 * 1024
+         lines <- readLines(inFile$datapath)
+         
+         files <- c(files,paste(fname,filenum,".csv",sep=""))
+         
+         sink(paste(fname,filenum,'.csv',sep=''))
+         
+         for(line in lines) {
+            
+            if(is.na(firstLine))
+               firstLine <- line
+            length <- nchar(line)
+            
+            if(total + length >= maxfilesize) {
+               filenum <- filenum + 1
+               total <- 0
+               sink()
+               files <- c(files,paste(fname,filenum,".csv",sep=""))
+               sink(paste(fname,filenum,'.csv',sep=''))
+               writeLines(firstLine)
+               length <- length + nchar(firstLine)
+            }
+            
+            writeLines(line)
+            total <- total + length + 2
+         }
+         sink()
+         
+         zip(zipfile=filename, files=files)
+      },
+      contentType = "application/zip"
    )
    
    ### Salesforce Cleaner
