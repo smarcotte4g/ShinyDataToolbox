@@ -301,25 +301,35 @@ function(input, output) {
    ### Filesmasher
    
    filesmasherInput <- reactive({
+     library(plyr)
+     #get input file info and ensure it's not null
       inFile <- input$filesmasherFile
       
       if (is.null(inFile))
          return(NULL)
       
-      # <CODE FOR SMASHING CSVS TOGETHER (ROW BIND)>
-      # <RETURN A DATA FRAME>
+      
+      #reads the list of files to data frame and stores it in a list
+      smashedFiles<- lapply(inFile$datapath, read.csv, header = T, stringsAsFactors = F)
+      rbind.fill(smashedFiles)
+      
    })
    
+   #renders the output of the reactive to a table on the UI
    output$filesmasherContent <- renderTable({
       filesmasherInput()
    })
    
+   #download button handler
    output$filesmasherDownload <- downloadHandler(
-      filename = function() { as.character(input$filesmasherFile) },
-      content = function(file) {
-         write.csv(filesmasherInput(), file, row.names = F)
-      }
-   )
+     
+     #name the file it will be
+     filename = "AllFilesTogether2.csv",
+     
+      content = function(filename){
+        smashed <- filesmasherInput()
+        write.csv(smashed, filename, na="", row.names = F)
+   })
    
    ### CSV Merge
    

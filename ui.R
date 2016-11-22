@@ -68,13 +68,13 @@ navbarPage("Uploading Files",
            tabPanel("Filesmasher",
                     sidebarLayout(
                        sidebarPanel(
-                          p("This function will remove all blank columns contained in a CSV file.")
+                          p("This function will smash together all files selected.")
                        ),
                        mainPanel(
                           fileInput('filesmasherFile', 'Choose CSV File (Remove)',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
-                                             '.csv')),
+                                             '.csv'), multiple = T),
                           tags$hr(),
                           downloadButton('filesmasherDownload', 'Download'),
                           tableOutput('filesmasherContent')
