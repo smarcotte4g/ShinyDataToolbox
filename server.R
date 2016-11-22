@@ -36,10 +36,6 @@ function(input, output) {
           write.csv(results[[i]], path, row.names = F)
         }
         zip(zipfile=fname, files=fs)
-<<<<<<< HEAD
-        #if(file.exists(paste0(fname, ".zip"))) {file.rename(paste0(fname, ".zip"), fname)}
-=======
->>>>>>> f589fae107d9094c1fef6c772086a69f2a985ad0
       },
       contentType = "application/zip"
    )
