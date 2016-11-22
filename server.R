@@ -298,7 +298,7 @@ function(input, output) {
       }
    )
    
-   ### Filesmasher
+   ### Filesmasher --- Done
    
    filesmasherInput <- reactive({
      library(plyr)
@@ -324,7 +324,7 @@ function(input, output) {
    output$filesmasherDownload <- downloadHandler(
      
      #name the file it will be
-     filename = "AllFilesTogether2.csv",
+     filename = "output.csv",
      
       content = function(filename){
         smashed <- filesmasherInput()
