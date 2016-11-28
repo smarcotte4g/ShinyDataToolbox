@@ -1,6 +1,6 @@
 library(shiny)
-
-navbarPage("Uploading Files",
+shinyUI(
+navbarPage(theme = "bootstrap.css","Infusionsoft Data Toolbox",
            tabPanel("Remove Blank Columns",
                     sidebarLayout(
                        sidebarPanel(
@@ -115,4 +115,5 @@ navbarPage("Uploading Files",
                           tableOutput('csvConverterContent')
                        ))
            )
+)
 )
