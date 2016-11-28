@@ -4,10 +4,12 @@ navbarPage("Uploading Files",
            tabPanel("Remove Blank Columns",
                     sidebarLayout(
                        sidebarPanel(
-                          p("This function will remove all blank columns contained in a CSV file.")
+                          p("This function will remove all blank columns contained in a CSV file."),
+                          br(),
+                          p("")
                        ),
                        mainPanel(
-                          fileInput('blankColumnsFile', 'Choose CSV File (Remove)',
+                          fileInput('blankColumnsFile', 'Choose CSV File',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv'), multiple = T),
@@ -56,7 +58,7 @@ navbarPage("Uploading Files",
                           p("This function will remove all blank columns contained in a CSV file.")
                        ),
                        mainPanel(
-                          fileInput('salesforceFile', 'Choose CSV File (Remove)',
+                          fileInput('salesforceFile', 'Choose CSV File',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv')),
@@ -71,7 +73,7 @@ navbarPage("Uploading Files",
                           p("This function will smash together all files selected.")
                        ),
                        mainPanel(
-                          fileInput('filesmasherFile', 'Choose CSV File (Remove)',
+                          fileInput('filesmasherFile', 'Choose CSV File',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv'), multiple = T),
@@ -86,7 +88,7 @@ navbarPage("Uploading Files",
                           p("This function will remove all blank columns contained in a CSV file.")
                        ),
                        mainPanel(
-                          fileInput('csvMergeFile', 'Choose CSV File (Remove)',
+                          fileInput('csvMergeFile', 'Choose CSV File',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv')),
@@ -101,7 +103,7 @@ navbarPage("Uploading Files",
                           p("This function will convert an XML, JSON, or YAML file to CSV for importing.")
                        ),
                        mainPanel(
-                          fileInput('csvConverterFile', 'Choose XML, JSON, or YAML File (Remove)',
+                          fileInput('csvConverterFile', 'Choose XML, JSON, or YAML File',
                                     accept=c('.xml',
                                              '.json',
                                              '.yaml',
