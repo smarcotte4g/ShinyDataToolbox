@@ -393,23 +393,106 @@ function(input, output) {
   ### CSV Converter
   
   csvConverterInput <- reactive({
+     #bring in the libraries to parse the different filetypes
+    library(jsonlite)
+     library(XML)
+     library(yaml)
+    
+     #store input file data
     inFile <- input$csvConverterFile
     
+    #ensure file is uploaded
     if (is.null(inFile))
       return(NULL)
     
-    # <CODE FOR CONVERTING FILES TO CSV, HANDLING JSON, XML, AND YAML>
-    # <RETURN A DATA FRAME>
+    #get the file extension
+    ext <- file_ext(inFile)
+    
+    #create empty list to add parsed data into
+    parsedList <- list()
+    
+    #checks the file extension, and runs different methods based on the file extension
+    if(ext=="xml") {
+       #parse XML
+       xml <- xmlParse(inFile$datapath,useInternalNodes = T,options=NOCDATA)
+       
+       #convert XML to list (which the flatten function needs)
+       parsedList <- xmlToList(xml)
+    } else if(ext=="json") {
+       
+       #parse JSON
+       parsedList <- fromJSON(inFile$datapath,simplifyDataFrame = F)
+       
+       #convert any NULL values to NA
+       parsedList <- lapply(parsedList, function(x) {
+          x[sapply(x, is.null)] <- NA
+          return(x)
+       })
+    } else if(ext=="yml"|ext=="yaml"|ext=="txt") {
+       #parse YAML
+       parsedList <- yaml.load_file(inFile$datapath)
+    }
+    
+    #=======================================================================================
+    #List Flattener functions
+    #source: http://stackoverflow.com/questions/26177565/converting-nested-list-to-dataframe
+    
+    tl <- function(e) { if (is.null(e)) return(NULL); ret <- typeof(e); if (ret == 'list' && !is.null(names(e))) ret <- list(type='namedlist') else ret <- list(type=ret,len=length(e)); ret; };
+    mkcsv <- function(v) paste0(collapse=',',v);
+    keyListToStr <- function(keyList) paste0(collapse='','/',sapply(keyList,function(key) if (is.null(key)) '*' else paste0(collapse=',',key)));
+    
+    extractLevelColumns <- function(
+       nodes, ## current level node selection
+       ..., ## additional arguments to data.frame()
+       keyList=list(), ## current key path under main list
+       sep=NULL, ## optional string separator on which to join multi-element vectors; if NULL, will leave as separate columns
+       mkname=function(keyList,maxLen) paste0(collapse='.',if (is.null(sep) && maxLen == 1L) keyList[-length(keyList)] else keyList) ## name builder from current keyList and character vector max length across node level; default to dot-separated keys, and remove last index component for scalars
+    ) {
+       cat(sprintf('extractLevelColumns(): %s\n',keyListToStr(keyList)));
+       if (length(nodes) == 0L) return(list()); ## handle corner case of empty main list
+       tlList <- lapply(nodes,tl);
+       typeList <- do.call(c,lapply(tlList,`[[`,'type'));
+       if (length(unique(typeList)) != 1L) stop(sprintf('error: inconsistent types (%s) at %s.',mkcsv(typeList),keyListToStr(keyList)));
+       type <- typeList[1L];
+       if (type == 'namedlist') { ## hash; recurse
+          allKeys <- unique(do.call(c,lapply(nodes,names)));
+          ret <- do.call(c,lapply(allKeys,function(key) extractLevelColumns(lapply(nodes,`[[`,key),...,keyList=c(keyList,key),sep=sep,mkname=mkname)));
+       } else if (type == 'list') { ## array; recurse
+          lenList <- do.call(c,lapply(tlList,`[[`,'len'));
+          maxLen <- max(lenList,na.rm=T);
+          allIndexes <- seq_len(maxLen);
+          ret <- do.call(c,lapply(allIndexes,function(index) extractLevelColumns(lapply(nodes,function(node) if (length(node) < index) NULL else node[[index]]),...,keyList=c(keyList,index),sep=sep,mkname=mkname))); ## must be careful to translate out-of-bounds to NULL; happens automatically with string keys, but not with integer indexes
+       } else if (type%in%c('raw','logical','integer','double','complex','character')) { ## atomic leaf node; build column
+          lenList <- do.call(c,lapply(tlList,`[[`,'len'));
+          maxLen <- max(lenList,na.rm=T);
+          if (is.null(sep)) {
+             ret <- lapply(seq_len(maxLen),function(i) setNames(data.frame(sapply(nodes,function(node) if (length(node) < i) NA else node[[i]]),...),mkname(c(keyList,i),maxLen)));
+          } else {
+             ## keep original type if maxLen is 1, IOW don't stringify
+             ret <- list(setNames(data.frame(sapply(nodes,function(node) if (length(node) == 0L) NA else if (maxLen == 1L) node else paste(collapse=sep,node)),...),mkname(keyList,maxLen)));
+          }; ## end if
+       } else stop(sprintf('error: unsupported type %s at %s.',type,keyListToStr(keyList)));
+       if (is.null(ret)) ret <- list(); ## handle corner case of exclusively empty sublists
+       ret;
+    }; ## end extractLevelColumns()
+    ## simple interface function
+    flattenList <- function(mainList,...) do.call(cbind,extractLevelColumns(mainList,...));
+    #=======================================================================================
+    
+    #call flatten function and return the data frame
+    flattenList(parsedList)
   })
   
+  #display data frame that's flattened
   output$csvConverterContent <- renderTable({
     csvConverterInput()
   })
   
   output$csvConverterDownload <- downloadHandler(
-    filename = function() { as.character(input$csvConverterFile) },
+     #sets the filename based on the input file
+    filename = function() { paste(file_path_sans_ext(as.character(input$csvConverterFile)),".csv",sep="") },
     content = function(file) {
-      write.csv(csvConverterInput(), file, row.names = F)
+      write.csv(csvConverterInput(), file, row.names = F, na="")
     }
   )
 }
