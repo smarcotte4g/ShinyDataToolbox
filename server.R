@@ -315,7 +315,7 @@ function(input, output) {
     }
   )
   
-  ### Filesmasher
+  ### Filesmasher --- DONE
   
   filesmasherInput <- reactive({
     library(plyr)
@@ -341,23 +341,35 @@ function(input, output) {
   output$filesmasherDownload <- downloadHandler(
     
     #name the file it will be
-    filename = "AllFilesTogether2.csv",
+    filename = "output.csv",
     
     content = function(filename){
+      
+      #call the file smasher function
       smashed <- filesmasherInput()
+      
+      #write to csv and output
       write.csv(smashed, filename, na="", row.names = F)
     })
   
-  ### CSV Merge
+  ### CSV Merge --- DONE
   
   csvMergeInput <- reactive({
     inFile <- input$csvMergeFile
     
     if (is.null(inFile))
       return(NULL)
+    #UID <- renderText({input$uniqueId})
+    UID <- as.character(input$uniqueId)
     
-    # <CODE FOR MERGING CSVS BY ID NUMBER>
-    # <RETURN A DATA FRAME>
+    #load the 1st data frame
+    mergeFile1 <- read.csv(inFile$datapath[1], header = T)
+    
+    #load the 2nd data frame
+    mergeFile2 <- read.csv(inFile$datapath[2], header = T)
+    
+    #use merge function to merge the 2 files together
+    merge(mergeFile1, mergeFile2, by.x = UID, by.y = UID, all.x = TRUE)
   })
   
   output$csvMergeContent <- renderTable({
@@ -365,11 +377,18 @@ function(input, output) {
   })
   
   output$csvMergeDownload <- downloadHandler(
-    filename = function() { as.character(input$csvMergeFile) },
-    content = function(file) {
-      write.csv(csvMergeInput(), file, row.names = F)
-    }
-  )
+    
+    #name the file it will be
+    filename = "output.csv",
+    
+    content = function(filename){
+      
+      #call the merge function
+      csvMerged <- csvMergeInput()
+      
+      #write to csv and then output file
+      write.csv(csvMerged, filename, na="", row.names = F)
+    })
   
   ### CSV Converter
   
