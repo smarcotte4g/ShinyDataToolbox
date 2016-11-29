@@ -3,8 +3,8 @@ library(tools)
 
 #set maximum upload filesize, in MBs
 options(shiny.maxRequestSize=200*1024^2)
-function(input, output) {
-  
+function(input, output, session) {
+  session$onSessionEnded(stopApp)
   ### Remove Blank Columns --- DONE
   
   #Returns the file input computation
@@ -300,8 +300,6 @@ function(input, output) {
     if (is.null(inFile))
       return(NULL)
     
-    # <CODE FOR CLEANING UP SALESFORCE>
-    # <RETURN LIST OF DATA FRAMES, BASED ON CHECKBOXES>
   })
   
   output$salesforceContent <- renderTable({
@@ -309,9 +307,116 @@ function(input, output) {
   })
   
   output$salesforceDownload <- downloadHandler(
-    filename = function() { as.character(input$salesforceFile) },
-    content = function(file) {
-      write.csv(salesforceInput(), file, row.names = F)
+    
+    filename = "salesforceoutput.zip",
+    content = function(filename) {
+      files <- c()
+      inFile <- input$salesforceFile
+      fileList <- inFile$name
+      source("SalesforceMaster.R")
+      if ((is.element("Contact.csv",fileList)) & ! (is.element("Account.csv",fileList))) {
+        if (is.element("User.csv",fileList))
+        {
+          #DataFrame fCcAncAnUy = engine.Evaluate(string.Format("fCcAncAnUy({0})", folderChanged)).AsDataFrame();
+          # Run Contacts function without account link and with user link
+          print("fCcAncAnUy")
+        }
+        else
+        {
+          #DataFrame fCcAncAnUn = engine.Evaluate(string.Format("fCcAncAnUn({0})", folderChanged)).AsDataFrame();
+          # Run Contacts function without account link and without user link"
+          print("fCcAncAnUn")
+        }
+      }
+      #}
+      if ((is.element("Account.csv",fileList)) & ! (is.element("Contact.csv",fileList)))
+      {
+        if (is.element("User.csv",fileList))
+        {
+          #DataFrame AcCncUy = engine.Evaluate(string.Format("AcCncUy({0})", folderChanged)).AsDataFrame();
+          # Run Accounts function without contacts link and with user link
+          print("AcCncUy")
+        }
+        else
+        {
+          #DataFrame AcCncUn = engine.Evaluate(string.Format("AcCncUn({0})", folderChanged)).AsDataFrame();
+          # Run Accounts function without user link
+          print("AcCncUn")
+        }
+      }
+      else if ((is.element("Contact.csv",fileList)) & (is.element("Account.csv",fileList)))
+      {
+        if (is.element("User.csv",fileList))
+        {
+          #DataFrame CcAcUy = engine.Evaluate(string.Format("CcAcUy({0})", folderChanged)).AsDataFrame();
+          # Run full parser function with user link
+          print("CcAcUy")
+        }
+        else
+        {
+          #DataFrame CcAcUn = engine.Evaluate(string.Format("CcAcUn({0})", folderChanged)).AsDataFrame();
+          # Run no user function without user link
+          print("CcAcUn")
+        }
+      }
+      if (is.element("Lead.csv",fileList))
+      {
+        if (is.element("User.csv",fileList))
+        {
+          #DataFrame LeadUy = engine.Evaluate(string.Format("LeadUy({0})", folderChanged)).AsDataFrame();
+          
+          lead <- read.csv(inFile[inFile$name=="Lead.csv",]$datapath, header = T)
+          user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
+          #userc <- userCleaner(user)
+          leadc <- LeadUy(lead, user)
+          #write current dataframe to csv
+          write.csv(leadc, "Lead.csv", row.names = F)
+          files <- c(files,"Lead.csv")
+        }
+        else
+        {
+          #DataFrame LeadUn = engine.Evaluate(string.Format("LeadUn({0})", folderChanged)).AsDataFrame();
+          print("LeadUn")
+        }
+      }
+      if (is.element("Opportunity.csv",fileList))
+      {
+        if (is.element("User.csv",fileList))
+        {
+          #DataFrame OpportunitiesUy = engine.Evaluate(string.Format("OpportunitiesUy({0})", folderChanged)).AsDataFrame();
+        }
+        else
+        {
+          #DataFrame OpportunitiesUn = engine.Evaluate(string.Format("OpportunitiesUn({0})", folderChanged)).AsDataFrame();
+        }
+      }
+      if (is.element("Note.csv",fileList))
+      {
+        if (is.element("User.csv",fileList))
+        {
+          #DataFrame NoteUy = engine.Evaluate(string.Format("NoteUy({0})", folderChanged)).AsDataFrame();
+        }
+        else
+        {
+          #DataFrame NoteUn = engine.Evaluate(string.Format("NoteUn({0})", folderChanged)).AsDataFrame();
+        }
+      }
+      if (is.element("Task.csv",fileList))
+      {
+        if (is.element("User.csv",fileList))
+        {
+          #DataFrame TaskUy = engine.Evaluate(string.Format("TaskUy({0})", folderChanged)).AsDataFrame();
+        }
+        else
+        {
+          #DataFrame TaskUn = engine.Evaluate(string.Format("TaskUn({0})", folderChanged)).AsDataFrame();
+        }
+      }
+      #zip all files and return as content
+      zip(zipfile=filename, files=files)
+    
+    #ensure filetype is zip
+    contentType = "application/zip"
     }
   )
   
@@ -393,12 +498,12 @@ function(input, output) {
   ### CSV Converter
   
   csvConverterInput <- reactive({
-     #bring in the libraries to parse the different filetypes
+    #bring in the libraries to parse the different filetypes
     library(jsonlite)
-     library(XML)
-     library(yaml)
+    library(XML)
+    library(yaml)
     
-     #store input file data
+    #store input file data
     inFile <- input$csvConverterFile
     
     #ensure file is uploaded
@@ -413,24 +518,24 @@ function(input, output) {
     
     #checks the file extension, and runs different methods based on the file extension
     if(ext=="xml") {
-       #parse XML
-       xml <- xmlParse(inFile$datapath,useInternalNodes = T,options=NOCDATA)
-       
-       #convert XML to list (which the flatten function needs)
-       parsedList <- xmlToList(xml)
+      #parse XML
+      xml <- xmlParse(inFile$datapath,useInternalNodes = T,options=NOCDATA)
+      
+      #convert XML to list (which the flatten function needs)
+      parsedList <- xmlToList(xml)
     } else if(ext=="json") {
-       
-       #parse JSON
-       parsedList <- fromJSON(inFile$datapath,simplifyDataFrame = F)
-       
-       #convert any NULL values to NA
-       parsedList <- lapply(parsedList, function(x) {
-          x[sapply(x, is.null)] <- NA
-          return(x)
-       })
+      
+      #parse JSON
+      parsedList <- fromJSON(inFile$datapath,simplifyDataFrame = F)
+      
+      #convert any NULL values to NA
+      parsedList <- lapply(parsedList, function(x) {
+        x[sapply(x, is.null)] <- NA
+        return(x)
+      })
     } else if(ext=="yml"|ext=="yaml"|ext=="txt") {
-       #parse YAML
-       parsedList <- yaml.load_file(inFile$datapath)
+      #parse YAML
+      parsedList <- yaml.load_file(inFile$datapath)
     }
     
     #=======================================================================================
@@ -442,38 +547,38 @@ function(input, output) {
     keyListToStr <- function(keyList) paste0(collapse='','/',sapply(keyList,function(key) if (is.null(key)) '*' else paste0(collapse=',',key)));
     
     extractLevelColumns <- function(
-       nodes, ## current level node selection
-       ..., ## additional arguments to data.frame()
-       keyList=list(), ## current key path under main list
-       sep=NULL, ## optional string separator on which to join multi-element vectors; if NULL, will leave as separate columns
-       mkname=function(keyList,maxLen) paste0(collapse='.',if (is.null(sep) && maxLen == 1L) keyList[-length(keyList)] else keyList) ## name builder from current keyList and character vector max length across node level; default to dot-separated keys, and remove last index component for scalars
+      nodes, ## current level node selection
+      ..., ## additional arguments to data.frame()
+      keyList=list(), ## current key path under main list
+      sep=NULL, ## optional string separator on which to join multi-element vectors; if NULL, will leave as separate columns
+      mkname=function(keyList,maxLen) paste0(collapse='.',if (is.null(sep) && maxLen == 1L) keyList[-length(keyList)] else keyList) ## name builder from current keyList and character vector max length across node level; default to dot-separated keys, and remove last index component for scalars
     ) {
-       cat(sprintf('extractLevelColumns(): %s\n',keyListToStr(keyList)));
-       if (length(nodes) == 0L) return(list()); ## handle corner case of empty main list
-       tlList <- lapply(nodes,tl);
-       typeList <- do.call(c,lapply(tlList,`[[`,'type'));
-       if (length(unique(typeList)) != 1L) stop(sprintf('error: inconsistent types (%s) at %s.',mkcsv(typeList),keyListToStr(keyList)));
-       type <- typeList[1L];
-       if (type == 'namedlist') { ## hash; recurse
-          allKeys <- unique(do.call(c,lapply(nodes,names)));
-          ret <- do.call(c,lapply(allKeys,function(key) extractLevelColumns(lapply(nodes,`[[`,key),...,keyList=c(keyList,key),sep=sep,mkname=mkname)));
-       } else if (type == 'list') { ## array; recurse
-          lenList <- do.call(c,lapply(tlList,`[[`,'len'));
-          maxLen <- max(lenList,na.rm=T);
-          allIndexes <- seq_len(maxLen);
-          ret <- do.call(c,lapply(allIndexes,function(index) extractLevelColumns(lapply(nodes,function(node) if (length(node) < index) NULL else node[[index]]),...,keyList=c(keyList,index),sep=sep,mkname=mkname))); ## must be careful to translate out-of-bounds to NULL; happens automatically with string keys, but not with integer indexes
-       } else if (type%in%c('raw','logical','integer','double','complex','character')) { ## atomic leaf node; build column
-          lenList <- do.call(c,lapply(tlList,`[[`,'len'));
-          maxLen <- max(lenList,na.rm=T);
-          if (is.null(sep)) {
-             ret <- lapply(seq_len(maxLen),function(i) setNames(data.frame(sapply(nodes,function(node) if (length(node) < i) NA else node[[i]]),...),mkname(c(keyList,i),maxLen)));
-          } else {
-             ## keep original type if maxLen is 1, IOW don't stringify
-             ret <- list(setNames(data.frame(sapply(nodes,function(node) if (length(node) == 0L) NA else if (maxLen == 1L) node else paste(collapse=sep,node)),...),mkname(keyList,maxLen)));
-          }; ## end if
-       } else stop(sprintf('error: unsupported type %s at %s.',type,keyListToStr(keyList)));
-       if (is.null(ret)) ret <- list(); ## handle corner case of exclusively empty sublists
-       ret;
+      cat(sprintf('extractLevelColumns(): %s\n',keyListToStr(keyList)));
+      if (length(nodes) == 0L) return(list()); ## handle corner case of empty main list
+      tlList <- lapply(nodes,tl);
+      typeList <- do.call(c,lapply(tlList,`[[`,'type'));
+      if (length(unique(typeList)) != 1L) stop(sprintf('error: inconsistent types (%s) at %s.',mkcsv(typeList),keyListToStr(keyList)));
+      type <- typeList[1L];
+      if (type == 'namedlist') { ## hash; recurse
+        allKeys <- unique(do.call(c,lapply(nodes,names)));
+        ret <- do.call(c,lapply(allKeys,function(key) extractLevelColumns(lapply(nodes,`[[`,key),...,keyList=c(keyList,key),sep=sep,mkname=mkname)));
+      } else if (type == 'list') { ## array; recurse
+        lenList <- do.call(c,lapply(tlList,`[[`,'len'));
+        maxLen <- max(lenList,na.rm=T);
+        allIndexes <- seq_len(maxLen);
+        ret <- do.call(c,lapply(allIndexes,function(index) extractLevelColumns(lapply(nodes,function(node) if (length(node) < index) NULL else node[[index]]),...,keyList=c(keyList,index),sep=sep,mkname=mkname))); ## must be careful to translate out-of-bounds to NULL; happens automatically with string keys, but not with integer indexes
+      } else if (type%in%c('raw','logical','integer','double','complex','character')) { ## atomic leaf node; build column
+        lenList <- do.call(c,lapply(tlList,`[[`,'len'));
+        maxLen <- max(lenList,na.rm=T);
+        if (is.null(sep)) {
+          ret <- lapply(seq_len(maxLen),function(i) setNames(data.frame(sapply(nodes,function(node) if (length(node) < i) NA else node[[i]]),...),mkname(c(keyList,i),maxLen)));
+        } else {
+          ## keep original type if maxLen is 1, IOW don't stringify
+          ret <- list(setNames(data.frame(sapply(nodes,function(node) if (length(node) == 0L) NA else if (maxLen == 1L) node else paste(collapse=sep,node)),...),mkname(keyList,maxLen)));
+        }; ## end if
+      } else stop(sprintf('error: unsupported type %s at %s.',type,keyListToStr(keyList)));
+      if (is.null(ret)) ret <- list(); ## handle corner case of exclusively empty sublists
+      ret;
     }; ## end extractLevelColumns()
     ## simple interface function
     flattenList <- function(mainList,...) do.call(cbind,extractLevelColumns(mainList,...));
@@ -489,7 +594,7 @@ function(input, output) {
   })
   
   output$csvConverterDownload <- downloadHandler(
-     #sets the filename based on the input file
+    #sets the filename based on the input file
     filename = function() { paste(file_path_sans_ext(as.character(input$csvConverterFile)),".csv",sep="") },
     content = function(file) {
       write.csv(csvConverterInput(), file, row.names = F, na="")
