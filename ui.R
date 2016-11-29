@@ -61,7 +61,8 @@ navbarPage(theme = "bootstrap.css","Infusionsoft Data Toolbox",
                           fileInput('salesforceFile', 'Choose CSV File',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
-                                             '.csv')),
+                                             '.csv'), multiple = T),
+                          
                           tags$hr(),
                           downloadButton('salesforceDownload', 'Download'),
                           tableOutput('salesforceContent')
