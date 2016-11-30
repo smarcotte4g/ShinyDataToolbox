@@ -9,11 +9,6 @@
 #y = Yes
 #U = User
 
-createDirec <- function(folderChanged){
-  setwd(folderChanged)
-  dir.create(file.path(folderChanged,'/Import'))
-}
-
 ###################################################
 # Function to rearrange 
 # Example: columns lead <- arrange.vars(lead, c("OwnerName"=2))
@@ -68,88 +63,10 @@ userCleaner <- function(user){
   return(userc)
 }
 
-
-fCcAncAyUy <- function(folderChanged){
-  ################################################## Begin fCcAncAyUy File CleanUp
-  # Call UserClean Function
-  userc <- userCleaner()
-  account <- read.csv("Account.csv", header = TRUE)
-  # Extract Id from User frame as variable
-  accId <- account[,c("Id")]
-  # Extract Name from User frame as variable
-  Company <- account[,c("Name")]
-  # Create Data Frame for user file to use with VLOOKUP
-  acctc <- data.frame(accId,Company)
-  # Remove variables from environment
-  remove('accId','Company','account')
-  
-  # Load in Contact file 
-  contact <- read.csv("Contact.csv", header = TRUE)
-  
-  # VLOOKUP Contact File accountname
-  contact <- merge(contact, acctc, by.x = "AccountId", by.y = "accId", all.x = TRUE)
-  # VLOOKUP Contact File for username
-  contact <- merge(contact, userc, by.x = "OwnerId", by.y = "uid", all.x = TRUE)
-  
-  # Change format from YYYY-MM-DD HH:MM:SS to MM/DD/YYYY
-  contact$DateCreated <- strptime(as.character(contact$CreatedDate), "%Y-%m-%d")
-  contact$DateCreated <- format(contact$DateCreated, "%m/%d/%Y")
-  
-  # If 'HasOptedOutOfEmail' does not have a 1 then delete column
-  if (FALSE == '1' %in% contact$HasOptedOutOfEmail) {
-    drop <- c("HasOptedOutOfEmail")
-    contact <- contact[ , !(names(contact) %in% drop)]
-    remove(drop)
-  } else print("Contact:No Need to Delete HasOptedOutOfEmail Column")
-  
-  # If 'DoNotCall' does not have a 1 then delete column
-  if (FALSE == '1' %in% contact$DoNotCall) {
-    drop <- c("DoNotCall")
-    contact <- contact[ , !(names(contact) %in% drop)]
-    remove(drop)
-  } else print("Contact:No Need to Delete DoNotCall Column")
-  
-  # If 'HasOptedOutOfFax' does not have a 1 then delete column
-  if (FALSE == '1' %in% contact$HasOptedOutOfFax) {
-    drop <- c("HasOptedOutOfFax")
-    contact <- contact[ , !(names(contact) %in% drop)]
-    remove(drop)
-  } else print("Contact:No Need to Delete HasOptedOutOfFax Column")
-  
-  
-  # Rename Titles to match Infusionsoft
-  names(contact)[names(contact)=="Title"] <- "JobTitle"
-  names(contact)[names(contact)=="Salutation"] <- "Title"
-  names(contact)[names(contact)=="Id"] <- "contactId"
-  
-  # Delete Columns that we do not normally import
-  drop <- c("IsDeleted","IsConverted","ConvertedAccountId","ConvertedContactId","ConvertedOpportunityId",
-            "IsUnreadByOwner","CreatedById","LastModifiedDate","LastModifiedById","SystemModstamp","LastActivityDate",
-            "LastTransferDate","Jigsaw","JigsawContactId","EmailBouncedReason","EmailBouncedDate","CreatedDate","OwnerId",
-            "LastCURequestDate","LastCUUpdateDate")
-  contact <- contact[ , !(names(contact) %in% drop)]
-  remove(drop)
-  # Rearrange Columns
-  contact <- arrange.vars(contact, c("contactId"=1,"FirstName"=2,"LastName"=3,"Title"=4,
-                                     "OwnerName"=5,"AccountId"=6,"Company"=7,"DateCreated"=8,
-                                     "JobTitle"=9))
-  # Delete all columns with no data
-  contact <- contact[!sapply(contact, function (x) all(is.na(x) | x == ""))]
-  
-  # Output File ready for import
-  write.csv(contact, file = file.path(folderChanged, "Import/Contact.csv"), na="", row.names = F)
-  
-  remove(contact, acctc, userc)
-  ############################################## End of fCcAncAyUy Cleaning
-}
-
-fCcAncAnUy <- function(folderChanged){
+fCcAncAnUy <- function(contact, user){
   ################################################## Begin fCcAncAnUy File CleanUp
   # Call UserClean Function
-  userc <- userCleaner()
-  
-  # Load in Contact file 
-  contact <- read.csv("Contact.csv", header = TRUE)
+  userc <- userCleaner(user)
   
   # VLOOKUP Contact File for username
   contact <- merge(contact, userc, by.x = "OwnerId", by.y = "uid", all.x = TRUE)
@@ -200,88 +117,13 @@ fCcAncAnUy <- function(folderChanged){
   contact <- contact[!sapply(contact, function (x) all(is.na(x) | x == ""))]
   
   # Output File ready for import
-  write.csv(contact, file = file.path(folderChanged, "Import/Contact.csv"), na="", row.names = F)
-  
+  return(contact)
   remove(contact, userc)
   ############################################## End of fCcAncAnUy Cleaning
 }
 
-fCcAncAyUn <- function(folderChanged){
-  ################################################## Begin fCcAncAyUn File CleanUp
-  account <- read.csv("Account.csv", header = TRUE)
-  # Extract Id from User frame as variable
-  accId <- account[,c("Id")]
-  # Extract Name from User frame as variable
-  Company <- account[,c("Name")]
-  # Create Data Frame for user file to use with VLOOKUP
-  acctc <- data.frame(accId,Company)
-  # Remove variables from environment
-  remove('accId','Company','account')
-  
-  # Load in Contact file 
-  contact <- read.csv("Contact.csv", header = TRUE)
-  
-  # VLOOKUP Contact File accountname
-  contact <- merge(contact, acctc, by.x = "AccountId", by.y = "accId", all.x = TRUE)
-  
-  # Change format from YYYY-MM-DD HH:MM:SS to MM/DD/YYYY
-  contact$DateCreated <- strptime(as.character(contact$CreatedDate), "%Y-%m-%d")
-  contact$DateCreated <- format(contact$DateCreated, "%m/%d/%Y")
-  
-  # If 'HasOptedOutOfEmail' does not have a 1 then delete column
-  if (FALSE == '1' %in% contact$HasOptedOutOfEmail) {
-    drop <- c("HasOptedOutOfEmail")
-    contact <- contact[ , !(names(contact) %in% drop)]
-    remove(drop)
-  } else print("Contact:No Need to Delete HasOptedOutOfEmail Column")
-  
-  # If 'DoNotCall' does not have a 1 then delete column
-  if (FALSE == '1' %in% contact$DoNotCall) {
-    drop <- c("DoNotCall")
-    contact <- contact[ , !(names(contact) %in% drop)]
-    remove(drop)
-  } else print("Contact:No Need to Delete DoNotCall Column")
-  
-  # If 'HasOptedOutOfFax' does not have a 1 then delete column
-  if (FALSE == '1' %in% contact$HasOptedOutOfFax) {
-    drop <- c("HasOptedOutOfFax")
-    contact <- contact[ , !(names(contact) %in% drop)]
-    remove(drop)
-  } else print("Contact:No Need to Delete HasOptedOutOfFax Column")
-  
-  
-  # Rename Titles to match Infusionsoft
-  names(contact)[names(contact)=="Title"] <- "JobTitle"
-  names(contact)[names(contact)=="Salutation"] <- "Title"
-  names(contact)[names(contact)=="Id"] <- "contactId"
-  
-  # Delete Columns that we do not normally import
-  drop <- c("IsDeleted","IsConverted","ConvertedAccountId","ConvertedContactId","ConvertedOpportunityId",
-            "IsUnreadByOwner","CreatedById","LastModifiedDate","LastModifiedById","SystemModstamp","LastActivityDate",
-            "LastTransferDate","Jigsaw","JigsawContactId","EmailBouncedReason","EmailBouncedDate","CreatedDate",
-            "LastCURequestDate","LastCUUpdateDate")
-  contact <- contact[ , !(names(contact) %in% drop)]
-  remove(drop)
-  # Rearrange Columns
-  contact <- arrange.vars(contact, c("contactId"=1,"FirstName"=2,"LastName"=3,"Title"=4,"AccountId"=5,"Company"=6,"DateCreated"=7,
-                                     "JobTitle"=8))
-  # Delete all columns with no data
-  contact <- contact[!sapply(contact, function (x) all(is.na(x) | x == ""))]
-  
-  # Output File ready for import
-  write.csv(contact, file = file.path(folderChanged, "Import/Contact.csv"), na="", row.names = F)
-  
-  remove(contact, acctc)
-  ############################################## End of fCcAncAyUn Cleaning
-}
-
-
-
-fCcAncAnUn <- function(folderChanged){
+fCcAncAnUn <- function(contact){
   ################################################## Begin fCcAncAnUn File CleanUp
-  
-  # Load in Contact file 
-  contact <- read.csv("Contact.csv", header = TRUE)
   
   # Change format from YYYY-MM-DD HH:MM:SS to MM/DD/YYYY
   contact$DateCreated <- strptime(as.character(contact$CreatedDate), "%Y-%m-%d")
@@ -329,17 +171,15 @@ fCcAncAnUn <- function(folderChanged){
   contact <- contact[!sapply(contact, function (x) all(is.na(x) | x == ""))]
   
   # Output File ready for import
-  write.csv(contact, file = file.path(folderChanged, "Import/Contact.csv"), na="", row.names = F)
-  
+  return(contact)
   remove(contact)
   ############################################## End of fCcAncAnUn Cleaning
 }
 
 ################################################## Begin AcCncUy File CleanUp
-AcCncUy <- function(folderChanged){
+AcCncUy <- function(account, user){
   # Call UserClean Function
-  userc <- userCleaner()
-  account <- read.csv("Account.csv", header = TRUE)
+  userc <- userCleaner(user)
   
   # VLOOKUP User File for username
   account <- merge(account, userc, by.x = "OwnerId", by.y = "uid", all.x = TRUE)
@@ -366,14 +206,13 @@ AcCncUy <- function(folderChanged){
   account <- account[!sapply(account, function (x) all(is.na(x) | x == ""))]
   
   # Output File ready for import
-  write.csv(account, file = file.path(folderChanged, "Import/Account.csv"), na="", row.names = F)
+  return(account)
   remove(account, userc)
 }
 ############################################## End of AcCncUy Cleaning
 
 ################################################## Begin AcCncUn File CleanUp
-AcCncUn <- function(folderChanged){
-  account <- read.csv("Account.csv", header = TRUE)
+AcCncUn <- function(account){
   
   # Change format from YYYY-MM-DD HH:MM:SS to MM/DD/YYYY
   account$DateCreated <- strptime(as.character(account$CreatedDate), "%Y-%m-%d")
@@ -397,18 +236,17 @@ AcCncUn <- function(folderChanged){
   account <- account[!sapply(account, function (x) all(is.na(x) | x == ""))]
   
   # Output File ready for import
-  write.csv(account, file = file.path(folderChanged, "Import/Account.csv"), na="", row.names = F)
+  return(account)
   remove(account)
 }
 ############################################## End of AcCncUn Cleaning
 
 
 ################################################## Start CcAcUy File CleanUp
-CcAcUy <- function(folderChanged){
+CcAcUy <- function(contact, account, user){
   # Call UserClean Function
-  userc <- userCleaner()
+  userc <- userCleaner(user)
   
-  account <- read.csv("Account.csv", header = TRUE)
   # Extract Id from User frame as variable
   accId <- account[,c("Id")]
   # Extract Name from User frame as variable
@@ -416,10 +254,8 @@ CcAcUy <- function(folderChanged){
   # Create Data Frame for user file to use with VLOOKUP
   acctc <- data.frame(accId,Company)
   # Remove variables from environment
-  remove('accId','Company','account')
+  remove('accId','Company')
   
-  # Load in Contact file 
-  contact <- read.csv("Contact.csv", header = TRUE)
   
   # VLOOKUP Contact File accountname
   contact <- merge(contact, acctc, by.x = "AccountId", by.y = "accId", all.x = TRUE)
@@ -471,12 +307,9 @@ CcAcUy <- function(folderChanged){
   # Delete all columns with no data
   contact <- contact[!sapply(contact, function (x) all(is.na(x) | x == ""))]
   
-  # Output File ready for import
-  write.csv(contact, file = file.path(folderChanged, "Import/Contact.csv"), na="", row.names = F)
-  remove(contact, acctc)
+  remove(acctc)
   
   ################################################## Begin Account File CleanUp
-  account <- read.csv("Account.csv", header = TRUE)
   
   # VLOOKUP User File for username
   account <- merge(account, userc, by.x = "OwnerId", by.y = "uid", all.x = TRUE)
@@ -503,16 +336,15 @@ CcAcUy <- function(folderChanged){
   account <- account[!sapply(account, function (x) all(is.na(x) | x == ""))]
   
   # Output File ready for import
-  write.csv(account, file = file.path(folderChanged, "Import/Account.csv"), na="", row.names = F)
-  
-  remove(account, userc)
+  acctcontList <- list("account"=account,"contact"=contact)
+  return(acctcontList)
+  remove(account, userc, contact)
 }
 ################################################## End CcAcUy File CleanUp
 
 ################################################## Start CcAcUn File CleanUp
-CcAcUn <- function(folderChanged){
+CcAcUn <- function(account, contact){
   
-  account <- read.csv("Account.csv", header = TRUE)
   # Extract Id from User frame as variable
   accId <- account[,c("Id")]
   # Extract Name from User frame as variable
@@ -520,10 +352,7 @@ CcAcUn <- function(folderChanged){
   # Create Data Frame for user file to use with VLOOKUP
   acctc <- data.frame(accId,Company)
   # Remove variables from environment
-  remove('accId','Company','account')
-  
-  # Load in Contact file 
-  contact <- read.csv("Contact.csv", header = TRUE)
+  remove('accId','Company')
   
   # VLOOKUP Contact File accountname
   contact <- merge(contact, acctc, by.x = "AccountId", by.y = "accId", all.x = TRUE)
@@ -573,12 +402,9 @@ CcAcUn <- function(folderChanged){
   # Delete all columns with no data
   contact <- contact[!sapply(contact, function (x) all(is.na(x) | x == ""))]
   
-  # Output File ready for import
-  write.csv(contact, file = file.path(folderChanged, "Import/Contact.csv"), na="", row.names = F)
-  remove(contact, acctc)
+  remove(acctc)
   
   ################################################## Begin Account File CleanUp
-  account <- read.csv("Account.csv", header = TRUE)
   
   # Change format from YYYY-MM-DD HH:MM:SS to MM/DD/YYYY
   account$DateCreated <- strptime(as.character(account$CreatedDate), "%Y-%m-%d")
@@ -602,9 +428,11 @@ CcAcUn <- function(folderChanged){
   account <- account[!sapply(account, function (x) all(is.na(x) | x == ""))]
   
   # Output File ready for import
-  write.csv(account, file = file.path(folderChanged, "Import/Account.csv"), na="", row.names = F)
+  acctcontList <- list("account"=account,"contact"=contact)
+  return(acctcontList)
+  remove(contact, account)
   
-  remove(account)
+  
 }
 ################################################## End CcAcUn File CleanUp
 
@@ -615,8 +443,6 @@ LeadUy <- function(lead, user){ #folderChanged
   # Call UserClean Function
   userc <- userCleaner(user)
   
-  # Load in Lead file
-  #lead <- read.csv("Lead.csv", header = TRUE)
   # VLOOKUP Lead File 
   lead <- merge(lead, userc, by.x = "OwnerId", by.y = "uid", all.x = TRUE)
   
@@ -665,18 +491,16 @@ LeadUy <- function(lead, user){ #folderChanged
   # Delete all columns with no data
   lead <- lead[!sapply(lead, function (x) all(is.na(x) | x == ""))]
   
+  remove(userc)
   # Output File ready for import
-  #write.csv(lead, file = file.path(folderChanged, "Import/Lead.csv"), na="", row.names = F)
   return(lead)
-  #remove(lead, userc)
+  
 }
 ############################################## End of LeadUy Cleaning
 
 
 ################################################## Begin LeadUn File CleanUp
-LeadUn <- function(folderChanged){
-  # Load in Lead file
-  lead <- read.csv("Lead.csv", header = TRUE)
+LeadUn <- function(lead){
   
   # Change format from YYYY-MM-DD HH:MM:SS to MM/DD/YYYY
   lead$DateCreated <- strptime(as.character(lead$CreatedDate), "%Y-%m-%d")
@@ -723,21 +547,19 @@ LeadUn <- function(folderChanged){
   lead <- lead[!sapply(lead, function (x) all(is.na(x) | x == ""))]
   
   # Output File ready for import
-  write.csv(lead, file = file.path(folderChanged, "Import/Lead.csv"), na="", row.names = F)
+  return(lead)
   
-  remove(lead)
+  #remove(lead)
 }
 ############################################## End of LeadUn Cleaning File CleanUp
 
 
 ############################################## Start of OpportunitiesUy Cleaning
-OpportunitiesUy <- function(folderChanged){
+OpportunitiesUy <- function(opportunity,user){
   
   # Call UserClean Function
-  userc <- userCleaner()
+  userc <- userCleaner(user)
   
-  # Read the opportunity file and create a data frame
-  opportunity <- read.csv("Opportunity.csv", header = TRUE)
   # VLOOKUP Opportunity File for username
   opportunity <- merge(opportunity, userc, by.x = "OwnerId", by.y = "uid", all.x = TRUE)
   
@@ -766,18 +588,15 @@ OpportunitiesUy <- function(folderChanged){
   
   # Delete all columns with no data
   opportunity <- opportunity[!sapply(opportunity, function (x) all(is.na(x) | x == ""))]
+  remove(userc)
+  return(opportunity)
   
-  # Output File ready for import
-  write.csv(opportunity, file = file.path(folderChanged, "Import/Opportunity.csv"), na="", row.names = F)
-  remove(opportunity, userc)
 }
 ############################################## End of OpportunitiesUy Cleaning
 
 
 ############################################## Start of OpportunitiesUn Cleaning
-OpportunitiesUn <- function(folderChanged){
-  # Read the opportunity file and create a data frame
-  opportunity <- read.csv("Opportunity.csv", header = TRUE)
+OpportunitiesUn <- function(opportunity){
   
   # Rename Titles to match Infusionsoft
   names(opportunity)[names(opportunity)=="Probability"] <- "PercentChance"
@@ -804,22 +623,18 @@ OpportunitiesUn <- function(folderChanged){
   
   # Delete all columns with no data
   opportunity <- opportunity[!sapply(opportunity, function (x) all(is.na(x) | x == ""))]
-  
-  # Output File ready for import
-  write.csv(opportunity, file = file.path(folderChanged, "Import/Opportunity.csv"), na="", row.names = F)
-  remove(opportunity)
+  return(opportunity)
+  #remove(opportunity)
 }
 ############################################## End of OpportunitiesUn Cleaning
 
 
 ############################################## Start of NoteUy Cleaning
-NoteUy <- function(folderChanged){
+NoteUy <- function(note,user){
   
   # Call UserClean Function
-  userc <- userCleaner()
+  userc <- userCleaner(user)
   
-  # Read the note file and create a data frame
-  note <- read.csv("Note.csv", header = TRUE)
   # VLOOKUP Opportunity File for username
   note <- merge(note, userc, by.x = "OwnerId", by.y = "uid", all.x = TRUE)
   
@@ -836,17 +651,14 @@ NoteUy <- function(folderChanged){
   note <- note[ , !(names(note) %in% drop)]
   remove(drop)
   
-  # Output File ready for import
-  write.csv(note, file = file.path(folderChanged, "Import/Note.csv"), na="", row.names = F)
-  remove(note, userc)
+  remove(userc)
+  return(note)
 }
 ############################################## End of NoteUy Cleaning
 
 
 ############################################## Start of NoteUn Cleaning
-NoteUn <- function(folderChanged){
-  # Read the note file and create a data frame
-  note <- read.csv("Note.csv", header = TRUE)
+NoteUn <- function(note){
   
   names(note)[names(note)=="Body"] <- "Notes"
   names(note)[names(note)=="Title"] <- "Description"
@@ -860,22 +672,17 @@ NoteUn <- function(folderChanged){
             "IsPrivate","CreatedDate")
   note <- note[ , !(names(note) %in% drop)]
   remove(drop)
-  
-  # Output File ready for import
-  write.csv(note, file = file.path(folderChanged, "Import/Note.csv"), na="", row.names = F)
-  remove(note)
+  return(note)
 }
 ############################################## End of NoteUn Cleaning
 
 
 ############################################## Start of TaskUy Cleaning
-TaskUy <- function(folderChanged){
+TaskUy <- function(task,user){
   
   # Call UserClean Function
-  userc <- userCleaner()
+  userc <- userCleaner(user)
   
-  # Read the task file and create a data frame
-  task <- read.csv("Task.csv", header = TRUE)
   # VLOOKUP Opportunity File for username
   task <- merge(task, userc, by.x = "OwnerId", by.y = "uid", all.x = TRUE)
   
@@ -908,16 +715,15 @@ TaskUy <- function(folderChanged){
                                "OwnerName"=7, "Priority"=8,
                                "ActivityDate"=9, "Status"=10))
   
+  remove(userc)
   # Output File ready for import
-  write.csv(task, file = file.path(folderChanged, "Import/Task.csv"), na="", row.names = F)
-  remove(task, userc)
+  return(task)
+  
 }
 ############################################## End of TaskUy Cleaning
 
 ############################################## Start of TaskUn Cleaning
-TaskUn <- function(folderChanged){
-  # Read the task file and create a data frame
-  task <- read.csv("Task.csv", header = TRUE)
+TaskUn <- function(task){
   
   names(task)[names(task)=="Description"] <- "Notes"
   names(task)[names(task)=="Subject"] <- "Description"
@@ -949,7 +755,7 @@ TaskUn <- function(folderChanged){
                                "ActivityDate"=9, "Status"=10))
   
   # Output File ready for import
-  write.csv(task, file = file.path(folderChanged, "Import/Task.csv"), na="", row.names = F)
-  remove(task)
+  return(task)
+  #remove(task)
 }
 ############################################## End of TaskUn Cleaning
