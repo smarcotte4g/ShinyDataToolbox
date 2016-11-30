@@ -292,7 +292,7 @@ function(input, output, session) {
     contentType = "application/zip"
   )
   
-  ### Salesforce Cleaner
+  ### Salesforce Cleaner --- Done * Need to Comment *
   
   salesforceInput <- reactive({
     inFile <- input$salesforceFile
@@ -314,18 +314,28 @@ function(input, output, session) {
       inFile <- input$salesforceFile
       fileList <- inFile$name
       source("SalesforceMaster.R")
+      #create and set working directory to temp directory
+      tempdir <- tempdir()
+      setwd(tempdir())
       if ((is.element("Contact.csv",fileList)) & ! (is.element("Account.csv",fileList))) {
         if (is.element("User.csv",fileList))
         {
-          #DataFrame fCcAncAnUy = engine.Evaluate(string.Format("fCcAncAnUy({0})", folderChanged)).AsDataFrame();
-          # Run Contacts function without account link and with user link
-          print("fCcAncAnUy")
+          #fCcAncAnUy
+          contact <- read.csv(inFile[inFile$name=="Contact.csv",]$datapath, header = T)
+          user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
+          contactc <- fCcAncAnUy(contact,user)
+          #write current dataframe to csv
+          write.csv(contactc, "Contact.csv", row.names = F)
+          files <- c(files,"Contact.csv")
         }
         else
         {
           #DataFrame fCcAncAnUn = engine.Evaluate(string.Format("fCcAncAnUn({0})", folderChanged)).AsDataFrame();
-          # Run Contacts function without account link and without user link"
-          print("fCcAncAnUn")
+          contact <- read.csv(inFile[inFile$name=="Contact.csv",]$datapath, header = T)
+          contactc <- fCcAncAnUn(contact)
+          #write current dataframe to csv
+          write.csv(contactc, "Contact.csv", row.names = F)
+          files <- c(files,"Contact.csv")
         }
       }
       #}
@@ -333,30 +343,49 @@ function(input, output, session) {
       {
         if (is.element("User.csv",fileList))
         {
-          #DataFrame AcCncUy = engine.Evaluate(string.Format("AcCncUy({0})", folderChanged)).AsDataFrame();
-          # Run Accounts function without contacts link and with user link
-          print("AcCncUy")
+          #("AcCncUy({0})", folderChanged)).AsDataFrame();
+          account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
+          user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
+          accountc <- AcCncUy(account,user)
+          #write current dataframe to csv
+          write.csv(accountc, "Account.csv", row.names = F)
+          files <- c(files,"Account.csv")
         }
         else
         {
-          #DataFrame AcCncUn = engine.Evaluate(string.Format("AcCncUn({0})", folderChanged)).AsDataFrame();
-          # Run Accounts function without user link
-          print("AcCncUn")
+          #("AcCncUn({0})", folderChanged)).AsDataFrame();
+          account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
+          accountc <- AcCncUn(account)
+          #write current dataframe to csv
+          write.csv(accountc, "Account.csv", row.names = F)
+          files <- c(files,"Account.csv")
         }
       }
       else if ((is.element("Contact.csv",fileList)) & (is.element("Account.csv",fileList)))
       {
         if (is.element("User.csv",fileList))
         {
-          #DataFrame CcAcUy = engine.Evaluate(string.Format("CcAcUy({0})", folderChanged)).AsDataFrame();
-          # Run full parser function with user link
-          print("CcAcUy")
+          #("CcAcUy({0})", folderChanged)).AsDataFrame();
+          contact <- read.csv(inFile[inFile$name=="Contact.csv",]$datapath, header = T)
+          account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
+          user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
+          acctcontList <- CcAcUy(contact, account, user)
+          
+          #write current dataframe to csv
+          write.csv(acctcontList$account, "Account.csv", row.names = F)
+          write.csv(acctcontList$contact, "Contact.csv", row.names = F)
+          files <- c(files,"Account.csv","Contact.csv")
         }
         else
         {
-          #DataFrame CcAcUn = engine.Evaluate(string.Format("CcAcUn({0})", folderChanged)).AsDataFrame();
-          # Run no user function without user link
-          print("CcAcUn")
+          #("CcAcUn({0})", folderChanged)).AsDataFrame();
+          contact <- read.csv(inFile[inFile$name=="Contact.csv",]$datapath, header = T)
+          account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
+          acctcontList <- CcAcUn(contact, account)
+          #write current dataframe to csv
+          write.csv(acctcontList$account, "Account.csv", row.names = F)
+          write.csv(acctcontList$contact, "Account.csv", row.names = F)
+          files <- c(files,"Account.csv","Contact.csv")
         }
       }
       if (is.element("Lead.csv",fileList))
@@ -367,7 +396,6 @@ function(input, output, session) {
           
           lead <- read.csv(inFile[inFile$name=="Lead.csv",]$datapath, header = T)
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
-          #userc <- userCleaner(user)
           leadc <- LeadUy(lead, user)
           #write current dataframe to csv
           write.csv(leadc, "Lead.csv", row.names = F)
@@ -375,41 +403,71 @@ function(input, output, session) {
         }
         else
         {
-          #DataFrame LeadUn = engine.Evaluate(string.Format("LeadUn({0})", folderChanged)).AsDataFrame();
-          print("LeadUn")
+          lead <- read.csv(inFile[inFile$name=="Lead.csv",]$datapath, header = T)
+          leadc <- LeadUn(lead)
+          #write current dataframe to csv
+          write.csv(leadc, "Lead.csv", row.names = F)
+          files <- c(files,"Lead.csv")
         }
       }
       if (is.element("Opportunity.csv",fileList))
       {
         if (is.element("User.csv",fileList))
         {
-          #DataFrame OpportunitiesUy = engine.Evaluate(string.Format("OpportunitiesUy({0})", folderChanged)).AsDataFrame();
+          #OpportunitiesUy({0})", folderChanged)).AsDataFrame();
+          user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
+          opportunity <- read.csv(inFile[inFile$name=="Opportunity.csv",]$datapath, header = T)
+          opportunityc <- OpportunitiesUy(opportunity,user)
+          write.csv(opportunityc, "Opportunity.csv", row.names = F)
+          files <- c(files,"Opportunity.csv")
         }
         else
         {
-          #DataFrame OpportunitiesUn = engine.Evaluate(string.Format("OpportunitiesUn({0})", folderChanged)).AsDataFrame();
+          #("OpportunitiesUn({0})", folderChanged)).AsDataFrame();
+          opportunity <- read.csv(inFile[inFile$name=="Opportunity.csv",]$datapath, header = T)
+          opportunityc <- OpportunitiesUn(opportunity)
+          write.csv(opportunityc, "Opportunity.csv", row.names = F)
+          files <- c(files,"Opportunity.csv")
         }
       }
       if (is.element("Note.csv",fileList))
       {
         if (is.element("User.csv",fileList))
         {
-          #DataFrame NoteUy = engine.Evaluate(string.Format("NoteUy({0})", folderChanged)).AsDataFrame();
+          #("NoteUy({0})", folderChanged)).AsDataFrame();
+          user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
+          note <- read.csv(inFile[inFile$name=="Note.csv",]$datapath, header = T)
+          notec <- NoteUy(note,user)
+          write.csv(notec, "Note.csv", row.names = F)
+          files <- c(files,"Note.csv")
         }
         else
         {
-          #DataFrame NoteUn = engine.Evaluate(string.Format("NoteUn({0})", folderChanged)).AsDataFrame();
+          #("NoteUn({0})", folderChanged)).AsDataFrame();
+          note <- read.csv(inFile[inFile$name=="Note.csv",]$datapath, header = T)
+          notec <- NoteUn(note)
+          write.csv(notec, "Note.csv", row.names = F)
+          files <- c(files,"Note.csv")
         }
       }
       if (is.element("Task.csv",fileList))
       {
         if (is.element("User.csv",fileList))
         {
-          #DataFrame TaskUy = engine.Evaluate(string.Format("TaskUy({0})", folderChanged)).AsDataFrame();
+          #("TaskUy({0})", folderChanged)).AsDataFrame();
+          user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
+          task <- read.csv(inFile[inFile$name=="Task.csv",]$datapath, header = T)
+          taskc <- TaskUy(task,user)
+          write.csv(taskc, "Task.csv", row.names = F)
+          files <- c(files,"Task.csv")
         }
         else
         {
-          #DataFrame TaskUn = engine.Evaluate(string.Format("TaskUn({0})", folderChanged)).AsDataFrame();
+          #("TaskUn({0})", folderChanged)).AsDataFrame();
+          task <- read.csv(inFile[inFile$name=="Task.csv",]$datapath, header = T)
+          taskc <- TaskUn(task)
+          write.csv(taskc, "Task.csv", row.names = F)
+          files <- c(files,"Task.csv")
         }
       }
       #zip all files and return as content
@@ -417,6 +475,10 @@ function(input, output, session) {
     
     #ensure filetype is zip
     contentType = "application/zip"
+    
+    #removes all saved variables and functions ---- Does not work
+    rm(list=ls())
+    rm(list=lsf.str())
     }
   )
   

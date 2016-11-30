@@ -4,7 +4,7 @@ navbarPage(theme = "bootstrap.css","Infusionsoft Data Toolbox",
            tabPanel("Remove Blank Columns",
                     sidebarLayout(
                        sidebarPanel(
-                          p("This function will remove all blank columns contained in a CSV file."),
+                          p("This function will remove all blank columns contained in a CSV file. If multiple files are selected, they will be outputted in a ZIP file."),
                           br(),
                           p("")
                        ),
@@ -55,10 +55,20 @@ navbarPage(theme = "bootstrap.css","Infusionsoft Data Toolbox",
            tabPanel("Salesforce Cleaner",
                     sidebarLayout(
                        sidebarPanel(
-                          p("This function will remove all blank columns contained in a CSV file.")
+                          p("This function will take the SalesForce files and output them in a clean format ready for import into Infusionsoft."),
+                          br(),
+                          p("Current supported files must be named exactly the same as below(to case):"),
+                          tags$li("Contact.csv"),
+                          tags$li("Account.csv"),
+                          tags$li("Lead.csv"),
+                          tags$li("Opportunity.csv"),
+                          tags$li("Task.csv"),
+                          tags$li("Note.csv"),
+                          tags$li("User.csv"),
+                          p("Note: If you want the user added to each file, you must select the User.csv during file selection.")
                        ),
                        mainPanel(
-                          fileInput('salesforceFile', 'Choose CSV File',
+                          fileInput('salesforceFile', 'Choose SalesForce CSV Files(CTRL + Click)',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv'), multiple = T),
@@ -74,7 +84,7 @@ navbarPage(theme = "bootstrap.css","Infusionsoft Data Toolbox",
                           p("This function will smash together all files selected. If the files do not have the same column names, they will be appended to the end.")
                        ),
                        mainPanel(
-                          fileInput('filesmasherFile', 'Choose CSV File',
+                          fileInput('filesmasherFile', 'Choose 2 or More CSV Files',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv'), multiple = T),
@@ -89,9 +99,9 @@ navbarPage(theme = "bootstrap.css","Infusionsoft Data Toolbox",
                           p("This function will take the unique Id from 2 files and merge them together like a VLOOKUP in Excel. Instead of one column being merged, the entire files will be.")
                        ),
                        mainPanel(
-                         p("Enter the name of the unique column that you want to merge by, they must be the same."),
-                         textInput("uniqueId", "Unique Id"),
-                          fileInput('csvMergeFile', 'Choose CSV File',
+                         #p("Enter the name of the unique column that you want to merge by, they must be the same. Only select 2 files."),
+                         textInput("uniqueId", "Enter the Unique Id Column Name"),
+                          fileInput('csvMergeFile', 'Choose 2 CSV Files',
                                     accept=c('text/csv', 
                                              'text/comma-separated-values,text/plain', 
                                              '.csv'), multiple = T),
