@@ -320,7 +320,7 @@ function(input, output, session) {
       if ((is.element("Contact.csv",fileList)) & ! (is.element("Account.csv",fileList))) {
         if (is.element("User.csv",fileList))
         {
-          #fCcAncAnUy
+          #fCcAncAnUy function
           contact <- read.csv(inFile[inFile$name=="Contact.csv",]$datapath, header = T)
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           contactc <- fCcAncAnUy(contact,user)
@@ -330,7 +330,7 @@ function(input, output, session) {
         }
         else
         {
-          #DataFrame fCcAncAnUn = engine.Evaluate(string.Format("fCcAncAnUn({0})", folderChanged)).AsDataFrame();
+          #fCcAncAnUn function
           contact <- read.csv(inFile[inFile$name=="Contact.csv",]$datapath, header = T)
           contactc <- fCcAncAnUn(contact)
           #write current dataframe to csv
@@ -338,12 +338,11 @@ function(input, output, session) {
           files <- c(files,"Contact.csv")
         }
       }
-      #}
       if ((is.element("Account.csv",fileList)) & ! (is.element("Contact.csv",fileList)))
       {
         if (is.element("User.csv",fileList))
         {
-          #("AcCncUy({0})", folderChanged)).AsDataFrame();
+          #AcCncUy function
           account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           accountc <- AcCncUy(account,user)
@@ -353,7 +352,7 @@ function(input, output, session) {
         }
         else
         {
-          #("AcCncUn({0})", folderChanged)).AsDataFrame();
+          #AcCncUn function
           account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
           accountc <- AcCncUn(account)
           #write current dataframe to csv
@@ -365,10 +364,12 @@ function(input, output, session) {
       {
         if (is.element("User.csv",fileList))
         {
-          #("CcAcUy({0})", folderChanged)).AsDataFrame();
+          #CcAcUy function
           contact <- read.csv(inFile[inFile$name=="Contact.csv",]$datapath, header = T)
           account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
+          
+          #add output to list since it returns 2 objects
           acctcontList <- CcAcUy(contact, account, user)
           
           #write current dataframe to csv
@@ -378,7 +379,7 @@ function(input, output, session) {
         }
         else
         {
-          #("CcAcUn({0})", folderChanged)).AsDataFrame();
+          #CcAcUn function
           contact <- read.csv(inFile[inFile$name=="Contact.csv",]$datapath, header = T)
           account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
           acctcontList <- CcAcUn(contact, account)
@@ -392,8 +393,7 @@ function(input, output, session) {
       {
         if (is.element("User.csv",fileList))
         {
-          #DataFrame LeadUy = engine.Evaluate(string.Format("LeadUy({0})", folderChanged)).AsDataFrame();
-          
+          #LeadUy function
           lead <- read.csv(inFile[inFile$name=="Lead.csv",]$datapath, header = T)
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           leadc <- LeadUy(lead, user)
@@ -403,6 +403,7 @@ function(input, output, session) {
         }
         else
         {
+          #LeadUn function
           lead <- read.csv(inFile[inFile$name=="Lead.csv",]$datapath, header = T)
           leadc <- LeadUn(lead)
           #write current dataframe to csv
@@ -414,7 +415,7 @@ function(input, output, session) {
       {
         if (is.element("User.csv",fileList))
         {
-          #OpportunitiesUy({0})", folderChanged)).AsDataFrame();
+          #OpportunitiesUy function
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           opportunity <- read.csv(inFile[inFile$name=="Opportunity.csv",]$datapath, header = T)
           opportunityc <- OpportunitiesUy(opportunity,user)
@@ -423,7 +424,7 @@ function(input, output, session) {
         }
         else
         {
-          #("OpportunitiesUn({0})", folderChanged)).AsDataFrame();
+          #OpportunitiesUn function
           opportunity <- read.csv(inFile[inFile$name=="Opportunity.csv",]$datapath, header = T)
           opportunityc <- OpportunitiesUn(opportunity)
           write.csv(opportunityc, "Opportunity.csv", row.names = F)
@@ -434,7 +435,7 @@ function(input, output, session) {
       {
         if (is.element("User.csv",fileList))
         {
-          #("NoteUy({0})", folderChanged)).AsDataFrame();
+          #NoteUy function
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           note <- read.csv(inFile[inFile$name=="Note.csv",]$datapath, header = T)
           notec <- NoteUy(note,user)
@@ -443,7 +444,7 @@ function(input, output, session) {
         }
         else
         {
-          #("NoteUn({0})", folderChanged)).AsDataFrame();
+          #NoteUn function
           note <- read.csv(inFile[inFile$name=="Note.csv",]$datapath, header = T)
           notec <- NoteUn(note)
           write.csv(notec, "Note.csv", row.names = F)
@@ -454,7 +455,7 @@ function(input, output, session) {
       {
         if (is.element("User.csv",fileList))
         {
-          #("TaskUy({0})", folderChanged)).AsDataFrame();
+          #TaskUy function
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           task <- read.csv(inFile[inFile$name=="Task.csv",]$datapath, header = T)
           taskc <- TaskUy(task,user)
@@ -463,7 +464,7 @@ function(input, output, session) {
         }
         else
         {
-          #("TaskUn({0})", folderChanged)).AsDataFrame();
+          #TaskUn function
           task <- read.csv(inFile[inFile$name=="Task.csv",]$datapath, header = T)
           taskc <- TaskUn(task)
           write.csv(taskc, "Task.csv", row.names = F)
@@ -477,10 +478,10 @@ function(input, output, session) {
     contentType = "application/zip"
     
     #removes all saved variables and functions ---- Does not work
-    rm(list=ls())
-    rm(list=lsf.str())
+    #remove('AcCncUn')
+    #rm(list=ls(all=T))
     }
-  )
+    )
   
   ### Filesmasher --- DONE
   
