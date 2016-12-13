@@ -325,7 +325,7 @@ function(input, output, session) {
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           contactc <- fCcAncAnUy(contact,user)
           #write current dataframe to csv
-          write.csv(contactc, "Contact.csv", row.names = F)
+          write.csv(contactc, "Contact.csv", na="", row.names = F)
           files <- c(files,"Contact.csv")
         }
         else
@@ -334,7 +334,7 @@ function(input, output, session) {
           contact <- read.csv(inFile[inFile$name=="Contact.csv",]$datapath, header = T)
           contactc <- fCcAncAnUn(contact)
           #write current dataframe to csv
-          write.csv(contactc, "Contact.csv", row.names = F)
+          write.csv(contactc, "Contact.csv", na="", row.names = F)
           files <- c(files,"Contact.csv")
         }
       }
@@ -347,7 +347,7 @@ function(input, output, session) {
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           accountc <- AcCncUy(account,user)
           #write current dataframe to csv
-          write.csv(accountc, "Account.csv", row.names = F)
+          write.csv(accountc, "Account.csv", na="", row.names = F)
           files <- c(files,"Account.csv")
         }
         else
@@ -356,7 +356,7 @@ function(input, output, session) {
           account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
           accountc <- AcCncUn(account)
           #write current dataframe to csv
-          write.csv(accountc, "Account.csv", row.names = F)
+          write.csv(accountc, "Account.csv", na="", row.names = F)
           files <- c(files,"Account.csv")
         }
       }
@@ -373,8 +373,8 @@ function(input, output, session) {
           acctcontList <- CcAcUy(contact, account, user)
           
           #write current dataframe to csv
-          write.csv(acctcontList$account, "Account.csv", row.names = F)
-          write.csv(acctcontList$contact, "Contact.csv", row.names = F)
+          write.csv(acctcontList$account, "Account.csv", na="", row.names = F)
+          write.csv(acctcontList$contact, "Contact.csv", na="", row.names = F)
           files <- c(files,"Account.csv","Contact.csv")
         }
         else
@@ -384,8 +384,8 @@ function(input, output, session) {
           account <- read.csv(inFile[inFile$name=="Account.csv",]$datapath, header = T)
           acctcontList <- CcAcUn(contact, account)
           #write current dataframe to csv
-          write.csv(acctcontList$account, "Account.csv", row.names = F)
-          write.csv(acctcontList$contact, "Account.csv", row.names = F)
+          write.csv(acctcontList$account, "Account.csv", na="", row.names = F)
+          write.csv(acctcontList$contact, "Account.csv", na="", row.names = F)
           files <- c(files,"Account.csv","Contact.csv")
         }
       }
@@ -398,7 +398,7 @@ function(input, output, session) {
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           leadc <- LeadUy(lead, user)
           #write current dataframe to csv
-          write.csv(leadc, "Lead.csv", row.names = F)
+          write.csv(leadc, "Lead.csv", na="", row.names = F)
           files <- c(files,"Lead.csv")
         }
         else
@@ -407,7 +407,7 @@ function(input, output, session) {
           lead <- read.csv(inFile[inFile$name=="Lead.csv",]$datapath, header = T)
           leadc <- LeadUn(lead)
           #write current dataframe to csv
-          write.csv(leadc, "Lead.csv", row.names = F)
+          write.csv(leadc, "Lead.csv", na="", row.names = F)
           files <- c(files,"Lead.csv")
         }
       }
@@ -419,7 +419,7 @@ function(input, output, session) {
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           opportunity <- read.csv(inFile[inFile$name=="Opportunity.csv",]$datapath, header = T)
           opportunityc <- OpportunitiesUy(opportunity,user)
-          write.csv(opportunityc, "Opportunity.csv", row.names = F)
+          write.csv(opportunityc, "Opportunity.csv", na="", row.names = F)
           files <- c(files,"Opportunity.csv")
         }
         else
@@ -427,7 +427,7 @@ function(input, output, session) {
           #OpportunitiesUn function
           opportunity <- read.csv(inFile[inFile$name=="Opportunity.csv",]$datapath, header = T)
           opportunityc <- OpportunitiesUn(opportunity)
-          write.csv(opportunityc, "Opportunity.csv", row.names = F)
+          write.csv(opportunityc, "Opportunity.csv", na="", row.names = F)
           files <- c(files,"Opportunity.csv")
         }
       }
@@ -439,7 +439,7 @@ function(input, output, session) {
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           note <- read.csv(inFile[inFile$name=="Note.csv",]$datapath, header = T)
           notec <- NoteUy(note,user)
-          write.csv(notec, "Note.csv", row.names = F)
+          write.csv(notec, "Note.csv", na="", row.names = F)
           files <- c(files,"Note.csv")
         }
         else
@@ -447,7 +447,7 @@ function(input, output, session) {
           #NoteUn function
           note <- read.csv(inFile[inFile$name=="Note.csv",]$datapath, header = T)
           notec <- NoteUn(note)
-          write.csv(notec, "Note.csv", row.names = F)
+          write.csv(notec, "Note.csv", na="", row.names = F)
           files <- c(files,"Note.csv")
         }
       }
@@ -459,7 +459,7 @@ function(input, output, session) {
           user <- read.csv(inFile[inFile$name=="User.csv",]$datapath, header = T)
           task <- read.csv(inFile[inFile$name=="Task.csv",]$datapath, header = T)
           taskc <- TaskUy(task,user)
-          write.csv(taskc, "Task.csv", row.names = F)
+          write.csv(taskc, "Task.csv", na="", row.names = F)
           files <- c(files,"Task.csv")
         }
         else
@@ -467,7 +467,7 @@ function(input, output, session) {
           #TaskUn function
           task <- read.csv(inFile[inFile$name=="Task.csv",]$datapath, header = T)
           taskc <- TaskUn(task)
-          write.csv(taskc, "Task.csv", row.names = F)
+          write.csv(taskc, "Task.csv", na="", row.names = F)
           files <- c(files,"Task.csv")
         }
       }
