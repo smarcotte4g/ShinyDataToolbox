@@ -318,17 +318,33 @@ function(input, output) {
   ### Filesmasher --- DONE
   
   filesmasherInput <- reactive({
-    library(plyr)
+    #library(plyr)
+     library(dplyr)
+     library(tools)
     #get input file info and ensure it's not null
     inFile <- input$filesmasherFile
     
     if (is.null(inFile))
       return(NULL)
     
+    df <- data.frame()
     
+    for(i in 1:length(inFile$datapath)) {
+       
+       file <- read.csv(inFile$datapath[i],header=T)
+       
+       file$filename <- file_path_sans_ext(inFile$name[i])
+       
+       file <- as.data.frame(sapply(file,as.factor))
+       
+       df <- bind_rows(df,file)
+    }
+    
+    df
     #reads the list of files to data frame and stores it in a list
-    smashedFiles<- lapply(inFile$datapath, read.csv, header = T, stringsAsFactors = F)
-    rbind.fill(smashedFiles)
+    #smashedFiles<- lapply(inFile$datapath, read.csv, header = T, stringsAsFactors = F)
+    #rbind.fill(smashedFiles)
+    
     
   })
   
