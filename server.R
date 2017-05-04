@@ -83,7 +83,7 @@ function(input, output, session) {
         blank <- blankColumnsInput()
         
         #write to csv and output
-        write.csv(blank, filename, na="", row.names = F)
+        write.csv(blank, filename, na="", row.names = F, fileEncoding = "UTF-8")
       }
     }
   )
@@ -385,7 +385,7 @@ function(input, output, session) {
           acctcontList <- CcAcUn(contact, account)
           #write current dataframe to csv
           write.csv(acctcontList$account, "Account.csv", na="", row.names = F)
-          write.csv(acctcontList$contact, "Account.csv", na="", row.names = F)
+          write.csv(acctcontList$contact, "Contact.csv", na="", row.names = F)
           files <- c(files,"Account.csv","Contact.csv")
         }
       }
